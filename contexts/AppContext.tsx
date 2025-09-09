@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 // Types
 export interface Business {
@@ -92,6 +92,10 @@ interface AppContextType {
   customers: Customer[];
   appointments: Appointment[];
   cashTransactions: CashTransaction[];
+  // Auth
+  users: User[];
+  roles: string[];
+  currentUser: User | null;
   
   // UI State
   sidebarOpen: boolean;
@@ -100,6 +104,11 @@ interface AppContextType {
   // Actions
   setSidebarOpen: (open: boolean) => void;
   toggleDarkMode: () => void;
+  // Auth actions
+  login: (username: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
+  addUser: (user: Omit<User, 'id' | 'createdAt'>) => Promise<boolean>;
+  addRole: (role: string) => Promise<boolean>;
   
   // Business actions
   addBusiness: (business: Omit<Business, 'id' | 'createdAt'>) => void;
@@ -132,122 +141,43 @@ interface AppContextType {
   deleteCashTransaction: (id: string) => void;
 }
 
+export interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  password: string;
+  role: string;
+  createdAt: Date;
+}
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
   // Data state
-  const [businesses, setBusinesses] = useState<Business[]>([
-    {
-      id: '1',
-      name: 'Güzellik Salonu XYZ',
-      address: 'Merkez Mah. 123. Sok. No:45 İstanbul',
-      phone: '+90 212 555 0123',
-      email: 'info@xyzsalon.com',
-      city: 'İstanbul',
-      district: 'Şişli',
-      taxOffice: 'Şişli Vergi Dairesi',
-      taxNumber: '1234567890',
-      createdAt: new Date('2024-01-15')
-    }
-  ]);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
   
-  const [services, setServices] = useState<Service[]>([
-    {
-      id: '1',
-      name: 'Saç Kesimi',
-      description: 'Profesyonel saç kesimi ve şekillendirme',
-      taxRate: 20,
-      price: 150,
-      businessId: '1',
-      createdAt: new Date('2024-01-16')
-    },
-    {
-      id: '2',
-      name: 'Makyaj',
-      description: 'Özel gün makyajı',
-      taxRate: 18,
-      price: 250,
-      businessId: '1',
-      createdAt: new Date('2024-01-16')
-    }
-  ]);
+  const [services, setServices] = useState<Service[]>([]);
   
-  const [staff, setStaff] = useState<Staff[]>([
-    {
-      id: '1',
-      name: 'Ayşe Yılmaz',
-      email: 'ayse@xyzsalon.com',
-      phone: '+90 532 123 4567',
-      businessId: '1',
-      serviceIds: ['1', '2'],
-      nationalId: '11111111111',
-      address: 'Merkez Mah. Örnek Cad. No:1 İstanbul',
-      notes: 'Kıdemli stilist',
-      createdAt: new Date('2024-01-17')
-    }
-  ]);
+  const [staff, setStaff] = useState<Staff[]>([]);
   
-  const [customers, setCustomers] = useState<Customer[]>([
-    {
-      id: '1',
-      name: 'Fatma Demir',
-      email: 'fatma@email.com',
-      phone: '+90 535 987 6543',
-      companyName: 'Demo A.Ş.',
-      customerType: 'corporate',
-      taxNumber: '9999999999',
-      taxOffice: 'Beşiktaş',
-      city: 'İstanbul',
-      district: 'Beşiktaş',
-      website: 'https://demo.com',
-      address: 'Levazım Mah. Örnek Sok. No:1',
-      notes: 'Önemli müşteri',
-      createdAt: new Date('2024-01-18')
-    }
-  ]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   
-  const [appointments, setAppointments] = useState<Appointment[]>([
-    {
-      id: '1',
-      businessId: '1',
-      serviceId: '1',
-      staffId: '1',
-      customerId: '1',
-      date: new Date('2025-01-20T14:00:00'),
-      status: 'confirmed',
-      notes: 'İlk randevu',
-      createdAt: new Date('2024-01-19')
-    }
-  ]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  const [cashTransactions, setCashTransactions] = useState<CashTransaction[]>([
-    {
-      id: 'c1',
-      businessId: '1',
-      type: 'income',
-      amount: 500,
-      paymentType: 'card',
-      taxRate: 20,
-      company: 'Müşteri Ödemesi',
-      documentNo: 'FIS-0001',
-      date: new Date('2025-01-21'),
-      description: 'Hizmet ödemesi',
-      createdAt: new Date('2025-01-21')
-    },
-    {
-      id: 'c2',
-      businessId: '1',
-      type: 'expense',
-      amount: 120,
-      paymentType: 'bank',
-      taxRate: 0,
-      company: 'Kırtasiye',
-      documentNo: 'GDR-0001',
-      date: new Date('2025-01-22'),
-      description: 'Ofis malzemeleri',
-      createdAt: new Date('2025-01-22')
+  const [cashTransactions, setCashTransactions] = useState<CashTransaction[]>([]);
+  
+  // Auth state
+  const [users, setUsers] = useState<User[]>([]);
+  const [roles, setRoles] = useState<string[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    try {
+      const storedCurrentUser = typeof window !== 'undefined' ? localStorage.getItem('wk_current_user') : null;
+      return storedCurrentUser ? JSON.parse(storedCurrentUser) : null;
+    } catch {
+      return null;
     }
-  ]);
+  });
   
   // UI state
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -259,125 +189,177 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Helper function to generate IDs
   const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
   
+  // (removed) eager init now handled in useState initializers
+
+  // Load initial data from API
+  useEffect(() => {
+    (async () => {
+      try {
+        const [b, s, st, c, a, ct, r, u] = await Promise.all([
+          fetch('/api/businesses'),
+          fetch('/api/services'),
+          fetch('/api/staff'),
+          fetch('/api/customers'),
+          fetch('/api/appointments'),
+          fetch('/api/cash-transactions'),
+          fetch('/api/roles'),
+          fetch('/api/users')
+        ]);
+        setBusinesses(await b.json());
+        setServices(await s.json());
+        setStaff(await st.json());
+        setCustomers(await c.json());
+        setAppointments(await a.json());
+        setCashTransactions(await ct.json());
+        const rolesList = await r.json();
+        setRoles(rolesList.map((x: any) => x.name ?? x));
+        setUsers(await u.json());
+      } catch {}
+    })();
+  }, []);
+
+  // Auth actions
+  const login = async (username: string, password: string) => {
+    try {
+      const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
+      if (!res.ok) return false;
+      // fetch user profile minimal
+      const me = await fetch('/api/users');
+      const list = await me.json();
+      const u = (list as any[]).find(x => x.username === username) || null;
+      setCurrentUser(u);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const logout = async () => {
+    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch {}
+    setCurrentUser(null);
+  };
+
+  const addUser = async (user: Omit<User, 'id' | 'createdAt'>) => {
+    try {
+      const res = await fetch('/api/users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...user }) });
+      if (!res.ok) return false;
+      // refresh list locally for UI
+      const listRes = await fetch('/api/users');
+      const list = await listRes.json();
+      setUsers(list);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const addRole = async (role: string) => {
+    try {
+      const res = await fetch('/api/roles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: role }) });
+      if (!res.ok) return false;
+      const rolesRes = await fetch('/api/roles');
+      const list = await rolesRes.json();
+      setRoles(list.map((r: any) => r.name));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  
   // Business actions
-  const addBusiness = (business: Omit<Business, 'id' | 'createdAt'>) => {
-    setBusinesses(prev => [...prev, {
-      ...business,
-      id: generateId(),
-      createdAt: new Date()
-    }]);
+  const addBusiness = async (business: Omit<Business, 'id' | 'createdAt'>) => {
+    const res = await fetch('/api/businesses', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(business) });
+    if (res.ok) setBusinesses(await (await fetch('/api/businesses')).json());
   };
   
-  const updateBusiness = (id: string, business: Partial<Business>) => {
-    setBusinesses(prev => prev.map(b => b.id === id ? { ...b, ...business } : b));
+  const updateBusiness = async (id: string, business: Partial<Business>) => {
+    await fetch(`/api/businesses/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(business) });
+    setBusinesses(await (await fetch('/api/businesses')).json());
   };
   
-  const deleteBusiness = (id: string) => {
-    setBusinesses(prev => prev.filter(b => b.id !== id));
-    // Also delete related data
-    setServices(prev => prev.filter(s => s.businessId !== id));
-    setStaff(prev => prev.filter(st => st.businessId !== id));
-    setAppointments(prev => prev.filter(a => a.businessId !== id));
-    setCashTransactions(prev => prev.filter(t => t.businessId !== id));
+  const deleteBusiness = async (id: string) => {
+    await fetch(`/api/businesses/${id}`, { method: 'DELETE' });
+    setBusinesses(await (await fetch('/api/businesses')).json());
   };
   
   // Service actions
-  const addService = (service: Omit<Service, 'id' | 'createdAt'>) => {
-    setServices(prev => [...prev, {
-      ...service,
-      id: generateId(),
-      createdAt: new Date()
-    }]);
+  const addService = async (service: Omit<Service, 'id' | 'createdAt'>) => {
+    await fetch('/api/services', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(service) });
+    setServices(await (await fetch('/api/services')).json());
   };
   
-  const updateService = (id: string, service: Partial<Service>) => {
-    setServices(prev => prev.map(s => s.id === id ? { ...s, ...service } : s));
+  const updateService = async (id: string, service: Partial<Service>) => {
+    await fetch(`/api/services/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(service) });
+    setServices(await (await fetch('/api/services')).json());
   };
   
-  const deleteService = (id: string) => {
-    setServices(prev => prev.filter(s => s.id !== id));
-    // Remove service from staff
-    setStaff(prev => prev.map(st => ({
-      ...st,
-      serviceIds: st.serviceIds.filter(sid => sid !== id)
-    })));
-    // Remove appointments for this service
-    setAppointments(prev => prev.filter(a => a.serviceId !== id));
+  const deleteService = async (id: string) => {
+    await fetch(`/api/services/${id}`, { method: 'DELETE' });
+    setServices(await (await fetch('/api/services')).json());
   };
   
   // Staff actions
-  const addStaff = (staff: Omit<Staff, 'id' | 'createdAt'>) => {
-    setStaff(prev => [...prev, {
-      ...staff,
-      id: generateId(),
-      createdAt: new Date()
-    }]);
+  const addStaff = async (staff: Omit<Staff, 'id' | 'createdAt'>) => {
+    await fetch('/api/staff', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(staff) });
+    setStaff(await (await fetch('/api/staff')).json());
   };
   
-  const updateStaff = (id: string, staff: Partial<Staff>) => {
-    setStaff(prev => prev.map(st => st.id === id ? { ...st, ...staff } : st));
+  const updateStaff = async (id: string, staff: Partial<Staff>) => {
+    await fetch(`/api/staff/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(staff) });
+    setStaff(await (await fetch('/api/staff')).json());
   };
   
-  const deleteStaff = (id: string) => {
-    setStaff(prev => prev.filter(st => st.id !== id));
-    // Remove appointments for this staff
-    setAppointments(prev => prev.filter(a => a.staffId !== id));
+  const deleteStaff = async (id: string) => {
+    await fetch(`/api/staff/${id}`, { method: 'DELETE' });
+    setStaff(await (await fetch('/api/staff')).json());
   };
   
   // Customer actions
-  const addCustomer = (customer: Omit<Customer, 'id' | 'createdAt'>) => {
-    setCustomers(prev => [...prev, {
-      ...customer,
-      id: generateId(),
-      createdAt: new Date()
-    }]);
+  const addCustomer = async (customer: Omit<Customer, 'id' | 'createdAt'>) => {
+    await fetch('/api/customers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(customer) });
+    setCustomers(await (await fetch('/api/customers')).json());
   };
   
-  const updateCustomer = (id: string, customer: Partial<Customer>) => {
-    setCustomers(prev => prev.map(c => c.id === id ? { ...c, ...customer } : c));
+  const updateCustomer = async (id: string, customer: Partial<Customer>) => {
+    await fetch(`/api/customers/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(customer) });
+    setCustomers(await (await fetch('/api/customers')).json());
   };
   
-  const deleteCustomer = (id: string) => {
-    setCustomers(prev => prev.filter(c => c.id !== id));
-    // Remove appointments for this customer
-    setAppointments(prev => prev.filter(a => a.customerId !== id));
+  const deleteCustomer = async (id: string) => {
+    await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+    setCustomers(await (await fetch('/api/customers')).json());
   };
   
   // Appointment actions
-  const addAppointment = (appointment: Omit<Appointment, 'id' | 'createdAt'>) => {
-    setAppointments(prev => [...prev, {
-      ...appointment,
-      id: generateId(),
-      createdAt: new Date()
-    }]);
+  const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt'>) => {
+    await fetch('/api/appointments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(appointment) });
+    setAppointments(await (await fetch('/api/appointments')).json());
   };
   
-  const updateAppointment = (id: string, appointment: Partial<Appointment>) => {
-    setAppointments(prev => prev.map(a => a.id === id ? { ...a, ...appointment } : a));
+  const updateAppointment = async (id: string, appointment: Partial<Appointment>) => {
+    await fetch(`/api/appointments/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(appointment) });
+    setAppointments(await (await fetch('/api/appointments')).json());
   };
   
-  const deleteAppointment = (id: string) => {
-    setAppointments(prev => prev.filter(a => a.id !== id));
+  const deleteAppointment = async (id: string) => {
+    await fetch(`/api/appointments/${id}`, { method: 'DELETE' });
+    setAppointments(await (await fetch('/api/appointments')).json());
   };
 
   // Cash actions
-  const addCashTransaction = (tx: Omit<CashTransaction, 'id' | 'createdAt'>) => {
-    setCashTransactions(prev => [
-      ...prev,
-      {
-        ...tx,
-        id: generateId(),
-        createdAt: new Date()
-      }
-    ]);
+  const addCashTransaction = async (tx: Omit<CashTransaction, 'id' | 'createdAt'>) => {
+    await fetch('/api/cash-transactions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(tx) });
+    setCashTransactions(await (await fetch('/api/cash-transactions')).json());
   };
 
-  const updateCashTransaction = (id: string, tx: Partial<CashTransaction>) => {
-    setCashTransactions(prev => prev.map(t => t.id === id ? { ...t, ...tx } : t));
+  const updateCashTransaction = async (id: string, tx: Partial<CashTransaction>) => {
+    await fetch(`/api/cash-transactions/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(tx) });
+    setCashTransactions(await (await fetch('/api/cash-transactions')).json());
   };
 
-  const deleteCashTransaction = (id: string) => {
-    setCashTransactions(prev => prev.filter(t => t.id !== id));
+  const deleteCashTransaction = async (id: string) => {
+    await fetch(`/api/cash-transactions/${id}`, { method: 'DELETE' });
+    setCashTransactions(await (await fetch('/api/cash-transactions')).json());
   };
   
   return (
@@ -388,10 +370,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
       customers,
       appointments,
       cashTransactions,
+      users,
+      roles,
+      currentUser,
       sidebarOpen,
       darkMode,
       setSidebarOpen,
       toggleDarkMode,
+      login,
+      logout,
+      addUser,
+      addRole,
       addBusiness,
       updateBusiness,
       deleteBusiness,

@@ -66,12 +66,8 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* Welcome */}
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
-        <h1 className="text-2xl font-bold mb-2">Hoş Geldiniz! 👋</h1>
-        <p className="text-blue-100">
-          İşletme yönetim panelinize genel bakış. Bugün {appointments.filter(apt => 
-            format(apt.date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
-          ).length} randevunuz var.
-        </p>
+        <h1 className="text-2xl font-bold mb-2">Webkeller Yönetim Paneline Hoş Geldiniz! 👋</h1>
+        
       </div>
 
       {/* Stats Grid */}

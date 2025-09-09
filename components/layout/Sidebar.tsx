@@ -97,6 +97,17 @@ const menuItems: MenuItem[] = [
         icon: List
       }
     ]
+  },
+  {
+    title: 'KULLANICILAR',
+    icon: Users,
+    children: [
+      {
+        title: 'Kullanıcı Yönetimi',
+        href: '/dashboard/kullanicilar',
+        icon: Users
+      }
+    ]
   }
 ];
 
