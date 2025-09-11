@@ -94,7 +94,6 @@ interface AppContextType {
   cashTransactions: CashTransaction[];
   // Auth
   users: User[];
-  roles: string[];
   currentUser: User | null;
   
   // UI State
@@ -108,7 +107,6 @@ interface AppContextType {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   addUser: (user: Omit<User, 'id' | 'createdAt'>) => Promise<boolean>;
-  addRole: (role: string) => Promise<boolean>;
   
   // Business actions
   addBusiness: (business: Omit<Business, 'id' | 'createdAt'>) => void;
@@ -147,7 +145,6 @@ export interface User {
   lastName: string;
   username: string;
   password: string;
-  role: string;
   createdAt: Date;
 }
 
@@ -169,7 +166,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   
   // Auth state
   const [users, setUsers] = useState<User[]>([]);
-  const [roles, setRoles] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     try {
       const storedCurrentUser = typeof window !== 'undefined' ? localStorage.getItem('wk_current_user') : null;
@@ -195,14 +191,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const [b, s, st, c, a, ct, r, u] = await Promise.all([
+        const [b, s, st, c, a, ct, u] = await Promise.all([
           fetch('/api/businesses'),
           fetch('/api/services'),
           fetch('/api/staff'),
           fetch('/api/customers'),
           fetch('/api/appointments'),
           fetch('/api/cash-transactions'),
-          fetch('/api/roles'),
           fetch('/api/users')
         ]);
         setBusinesses(await b.json());
@@ -211,8 +206,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setCustomers(await c.json());
         setAppointments(await a.json());
         setCashTransactions(await ct.json());
-        const rolesList = await r.json();
-        setRoles(rolesList.map((x: any) => x.name ?? x));
         setUsers(await u.json());
       } catch {}
     })();
@@ -253,18 +246,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const addRole = async (role: string) => {
-    try {
-      const res = await fetch('/api/roles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: role }) });
-      if (!res.ok) return false;
-      const rolesRes = await fetch('/api/roles');
-      const list = await rolesRes.json();
-      setRoles(list.map((r: any) => r.name));
-      return true;
-    } catch {
-      return false;
-    }
-  };
+  // removed roles related actions
   
   // Business actions
   const addBusiness = async (business: Omit<Business, 'id' | 'createdAt'>) => {
@@ -371,7 +353,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       appointments,
       cashTransactions,
       users,
-      roles,
       currentUser,
       sidebarOpen,
       darkMode,
@@ -380,7 +361,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       addUser,
-      addRole,
       addBusiness,
       updateBusiness,
       deleteBusiness,

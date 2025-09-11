@@ -15,19 +15,11 @@ model User {
   lastName  String
   username  String   @unique
   password  String
-  roleId    String
-  role      Role     @relation(fields: [roleId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Role {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  users     User[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+// Role model removed
 
 model Business {
   id               String            @id @default(cuid())
@@ -59,6 +51,7 @@ model Service {
   appointments Appointment[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  staff        Staff[]       @relation("StaffServices")
 }
 
 model Staff {
@@ -68,7 +61,9 @@ model Staff {
   name         String
   email        String
   phone        String
-  serviceIds   String // store as CSV or use a join table if needed later
+  services     Service[] @relation("StaffServices")
+// Ara tablo: Staff ile Service arasında çoktan çoğa ilişki
+// Prisma'da yukarıdaki relation tanımı ile otomatik olarak ara tablo oluşturulur, elle model eklemeye gerek yoktur.
   nationalId   String
   address      String
   notes        String?

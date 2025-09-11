@@ -5,25 +5,23 @@ import { useApp } from '@/contexts/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+// removed role select imports
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function KullanıcılarPage() {
-  const { users, roles, addUser, addRole } = useApp();
-  const [roleOptions, setRoleOptions] = useState<string[]>(roles);
+  const { users, addUser } = useApp();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<string>('');
-  const [newRole, setNewRole] = useState('');
+  // removed role state
   const [message, setMessage] = useState<string>('');
 
-  const canSubmit = useMemo(() => firstName && lastName && username && password && role, [firstName, lastName, username, password, role]);
+  const canSubmit = useMemo(() => Boolean(firstName && lastName && username && password), [firstName, lastName, username, password]);
 
   const onAddUser = () => {
     setMessage('');
-    const ok = addUser({ firstName, lastName, username, password, role });
+    const ok = addUser({ firstName, lastName, username, password } as any);
     if (!ok) {
       setMessage('Kullanıcı adı zaten mevcut.');
       return;
@@ -32,36 +30,13 @@ export default function KullanıcılarPage() {
     setLastName('');
     setUsername('');
     setPassword('');
-    setRole('');
+    // role removed
     setMessage('Kullanıcı eklendi.');
   };
 
-  const onAddRole = async () => {
-    setMessage('');
-    const ok = await addRole(newRole);
-    if (!ok) {
-      setMessage('Rol eklenemedi. Zaten mevcut veya geçersiz.');
-      return;
-    }
-    setNewRole('');
-    setMessage('Rol eklendi.');
-    // refresh roles
-    try {
-      const res = await fetch('/api/roles');
-      const list = await res.json();
-      setRoleOptions(list.map((r: any) => r.name));
-    } catch {}
-  };
+  // removed role creation handler
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch('/api/roles');
-        const list = await res.json();
-        setRoleOptions(list.map((r: any) => r.name));
-      } catch {}
-    })();
-  }, []);
+  // removed roles fetch
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -77,7 +52,7 @@ export default function KullanıcılarPage() {
                   <TableHead>Ad</TableHead>
                   <TableHead>Soyad</TableHead>
                   <TableHead>Kullanıcı Adı</TableHead>
-                  <TableHead>Rol</TableHead>
+                  {/* role column removed */}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -86,12 +61,12 @@ export default function KullanıcılarPage() {
                     <TableCell>{u.firstName}</TableCell>
                     <TableCell>{u.lastName}</TableCell>
                     <TableCell>{u.username}</TableCell>
-                    <TableCell>{u.role}</TableCell>
+                    {/* role cell removed */}
                   </TableRow>
                 ))}
                 {users.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-sm text-gray-500">Kullanıcı bulunamadı.</TableCell>
+                    <TableCell colSpan={3} className="text-center text-sm text-gray-500">Kullanıcı bulunamadı.</TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -123,36 +98,13 @@ export default function KullanıcılarPage() {
                 <label className="block text-sm mb-1">Şifre</label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm mb-1">Rol</label>
-                <Select value={role} onValueChange={setRole}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Rol seçin" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {roleOptions.map(r => (
-                      <SelectItem key={r} value={r}>{r}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* role selection removed */}
             </div>
             <Button className="mt-4" onClick={onAddUser} disabled={!canSubmit}>Kullanıcı Ekle</Button>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Yeni Rol Ekle</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-2">
-              <Input placeholder="Rol adı (ör. Depo)" value={newRole} onChange={(e) => setNewRole(e.target.value)} />
-              <Button onClick={onAddRole}>Ekle</Button>
-            </div>
-            {message && <div className="text-sm text-gray-600 mt-3">{message}</div>}
-          </CardContent>
-        </Card>
+        {/* role creation card removed */}
       </div>
     </div>
   );

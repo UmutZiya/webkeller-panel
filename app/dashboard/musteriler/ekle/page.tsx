@@ -5,8 +5,9 @@ import { useApp } from '@/contexts/AppContext';
 import { User, Mail, Phone, CheckCircle } from 'lucide-react';
 
 export default function MusteriEklePage() {
-  const { addCustomer } = useApp();
+  const { addCustomer, businesses } = useApp();
   const [formData, setFormData] = useState({
+    businessId: '',
     name: '',
     email: '',
     phone: '',
@@ -24,10 +25,10 @@ export default function MusteriEklePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.businessId) return;
     addCustomer(formData);
     setSuccess(true);
-    setFormData({ name: '', email: '', phone: '', taxNumber: '', taxOffice: '', companyName: '', city: '', district: '', customerType: 'individual', website: '', address: '', notes: '' });
-    
+    setFormData({ businessId: '', name: '', email: '', phone: '', taxNumber: '', taxOffice: '', companyName: '', city: '', district: '', customerType: 'individual', website: '', address: '', notes: '' });
     setTimeout(() => setSuccess(false), 3000);
   };
 
@@ -57,6 +58,22 @@ export default function MusteriEklePage() {
 
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="col-span-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              İşletme *
+            </label>
+            <select
+              required
+              value={formData.businessId}
+              onChange={e => setFormData({ ...formData, businessId: e.target.value })}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100 transition-all duration-200"
+            >
+              <option value="">İşletme seçin</option>
+              {businesses.map(b => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+          </div>
           <div className="col-span-1">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <User className="w-4 h-4 inline mr-2" />
@@ -235,7 +252,7 @@ export default function MusteriEklePage() {
           <div className="md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row gap-4 pt-2">
             <button
               type="button"
-              onClick={() => setFormData({ name: '', email: '', phone: '', taxNumber: '', taxOffice: '', companyName: '', city: '', district: '', customerType: 'individual', website: '', address: '', notes: '' })}
+              onClick={() => setFormData({ businessId: '', name: '', email: '', phone: '', taxNumber: '', taxOffice: '', companyName: '', city: '', district: '', customerType: 'individual', website: '', address: '', notes: '' })}
               className="w-full sm:w-auto flex-1 px-6 py-3 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               Temizle

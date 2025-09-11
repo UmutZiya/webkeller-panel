@@ -1,12 +1,14 @@
+
 'use client';
+import Image from 'next/image';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  Home, 
-  Building2, 
-  Users, 
+import {
+  Home,
+  Building2,
+  Users,
   Calendar,
   ChevronDown,
   ChevronRight,
@@ -117,8 +119,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   const toggleExpanded = (title: string) => {
-    setExpandedItems(prev => 
-      prev.includes(title) 
+    setExpandedItems(prev =>
+      prev.includes(title)
         ? prev.filter(item => item !== title)
         : [...prev, title]
     );
@@ -132,12 +134,28 @@ export function Sidebar() {
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-white" />
+          <div className="w-full flex justify-center items-center my-2">
+            <div className="bg-white/80 dark:bg-gray-900/80 rounded-3xl shadow-xl border border-blue-200 dark:border-gray-700 p-4 flex items-center justify-center transition-all duration-300 hover:scale-105" style={{ minWidth: 0 }}>
+              {/* Aydınlık mod logosu */}
+              <Image
+                src="/maviwebkeller.png"
+                alt="Logo"
+                width={180}
+                height={60}
+                className="object-contain block dark:hidden mx-auto"
+                priority
+              />
+              {/* Karanlık mod logosu */}
+              <Image
+                src="/beyazwebkeller.png"
+                alt="Logo"
+                width={180}
+                height={60}
+                className="object-contain hidden dark:block mx-auto"
+                priority
+              />
+            </div>
           </div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-            Admin Panel
-          </h1>
         </div>
         <button
           onClick={() => setSidebarOpen(false)}
@@ -232,7 +250,7 @@ export function Sidebar() {
     <>
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />

@@ -1,10 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },
-  images: { unoptimized: true },
+  // If you need static export in the future, note that API routes won't work with 'output: export'.
 };
 
 module.exports = nextConfig;

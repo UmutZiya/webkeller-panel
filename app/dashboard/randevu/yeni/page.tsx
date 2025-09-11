@@ -56,7 +56,7 @@ export default function YeniRandevuPage() {
     services.filter(s => s.businessId === formData.businessId);
 
   const getAvailableStaff = () => 
-    staff.filter(s => s.businessId === formData.businessId && s.serviceIds.includes(formData.serviceId));
+    staff.filter(s => s.businessId === formData.businessId && (s.serviceIds || []).includes(formData.serviceId));
 
   const getSelectedBusiness = () => businesses.find(b => b.id === formData.businessId);
   const getSelectedService = () => services.find(s => s.id === formData.serviceId);

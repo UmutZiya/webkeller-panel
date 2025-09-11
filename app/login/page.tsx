@@ -63,7 +63,7 @@ export default function LoginPage() {
                 {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
               </Button>
               <p className="text-xs text-gray-500 mt-2">
-                İlk kullanım için kullanıcı adı: <b>admin</b>, şifre: <b>admin</b>
+                
               </p>
             </form>
           </CardContent>

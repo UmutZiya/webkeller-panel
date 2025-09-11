@@ -75,8 +75,8 @@ export default function PersonelPage() {
   const getBusinessName = (businessId: string) => 
     businesses.find(b => b.id === businessId)?.name || 'Bilinmeyen İşletme';
 
-  const getServiceNames = (serviceIds: string[]) => 
-    serviceIds.map(id => services.find(s => s.id === id)?.name).filter(Boolean).join(', ') || 'Hizmet yok';
+  const getServiceNames = (serviceIds: string[] = []) => 
+    (serviceIds || []).map(id => services.find(s => s.id === id)?.name).filter(Boolean).join(', ') || 'Hizmet yok';
 
   const getAvailableServices = () => 
     services.filter(s => s.businessId === formData.businessId);
