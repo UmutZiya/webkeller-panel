@@ -15,11 +15,21 @@ model User {
   lastName  String
   username  String   @unique
   password  String
+  roleId    String?
+  role      Role?     @relation(fields: [roleId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 // Role model removed
+model Role {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  allowedMenus Json // Menü yetkileri (örn: ["dashboard", "cash", ...])
+  users        User[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
 
 model Business {
   id               String            @id @default(cuid())
@@ -43,7 +53,7 @@ model Business {
 model Service {
   id           String        @id @default(cuid())
   businessId   String
-  business     Business      @relation(fields: [businessId], references: [id])
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
   name         String
   description  String
   taxRate      Int
@@ -57,7 +67,7 @@ model Service {
 model Staff {
   id           String        @id @default(cuid())
   businessId   String
-  business     Business      @relation(fields: [businessId], references: [id])
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
   name         String
   email        String
   phone        String
@@ -75,7 +85,7 @@ model Staff {
 model Customer {
   id           String        @id @default(cuid())
   businessId   String
-  business     Business      @relation(fields: [businessId], references: [id])
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
   name         String
   email        String
   phone        String
@@ -96,13 +106,13 @@ model Customer {
 model Appointment {
   id         String   @id @default(cuid())
   businessId String
-  business   Business @relation(fields: [businessId], references: [id])
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   serviceId  String
-  service    Service  @relation(fields: [serviceId], references: [id])
+  service    Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   staffId    String
-  staff      Staff    @relation(fields: [staffId], references: [id])
+  staff      Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
   customerId String
-  customer   Customer @relation(fields: [customerId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   date       DateTime
   status     String
   notes      String?
@@ -113,7 +123,7 @@ model Appointment {
 model CashTransaction {
   id          String   @id @default(cuid())
   businessId  String
-  business    Business @relation(fields: [businessId], references: [id])
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
   type        String
   amount      Int
   paymentType String

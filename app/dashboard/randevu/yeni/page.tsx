@@ -36,7 +36,7 @@ export default function YeniRandevuPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const appointmentDate = new Date(`${formData.date}T${formData.time}`);
-    
+
     addAppointment({
       businessId: formData.businessId,
       serviceId: formData.serviceId,
@@ -52,10 +52,10 @@ export default function YeniRandevuPage() {
     setTimeout(() => setSuccess(false), 3000);
   };
 
-  const getAvailableServices = () => 
+  const getAvailableServices = () =>
     services.filter(s => s.businessId === formData.businessId);
 
-  const getAvailableStaff = () => 
+  const getAvailableStaff = () =>
     staff.filter(s => s.businessId === formData.businessId && (s.serviceIds || []).includes(formData.serviceId));
 
   const getSelectedBusiness = () => businesses.find(b => b.id === formData.businessId);
@@ -119,30 +119,27 @@ export default function YeniRandevuPage() {
         <div className="flex items-center justify-between mb-8">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200 ${
-                currentStep === step.number
+              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-200 ${currentStep === step.number
                   ? 'bg-blue-500 border-blue-500 text-white'
                   : step.completed
-                  ? 'bg-green-500 border-green-500 text-white'
-                  : 'border-gray-300 dark:border-gray-600 text-gray-400'
-              }`}>
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-400'
+                }`}>
                 <step.icon className="w-5 h-5" />
               </div>
               <div className="ml-3 hidden sm:block">
-                <p className={`text-sm font-medium ${
-                  currentStep === step.number
+                <p className={`text-sm font-medium ${currentStep === step.number
                     ? 'text-blue-600 dark:text-blue-400'
                     : step.completed
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-gray-500 dark:text-gray-400'
-                }`}>
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}>
                   {step.title}
                 </p>
               </div>
               {index < steps.length - 1 && (
-                <div className={`w-12 h-0.5 mx-4 ${
-                  step.completed ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
-                }`} />
+                <div className={`w-12 h-0.5 mx-4 ${step.completed ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+                  }`} />
               )}
             </div>
           ))}
@@ -161,11 +158,10 @@ export default function YeniRandevuPage() {
                   <div
                     key={business.id}
                     onClick={() => setFormData({ ...formData, businessId: business.id })}
-                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
-                      formData.businessId === business.id
+                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${formData.businessId === business.id
                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     <h4 className="font-medium text-gray-900 dark:text-gray-100">{business.name}</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{business.address}</p>
@@ -191,11 +187,10 @@ export default function YeniRandevuPage() {
                   <div
                     key={service.id}
                     onClick={() => setFormData({ ...formData, serviceId: service.id })}
-                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
-                      formData.serviceId === service.id
+                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${formData.serviceId === service.id
                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     <h4 className="font-medium text-gray-900 dark:text-gray-100">{service.name}</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{service.description}</p>
@@ -223,11 +218,10 @@ export default function YeniRandevuPage() {
                   <div
                     key={staffMember.id}
                     onClick={() => setFormData({ ...formData, staffId: staffMember.id })}
-                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
-                      formData.staffId === staffMember.id
+                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${formData.staffId === staffMember.id
                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     <h4 className="font-medium text-gray-900 dark:text-gray-100">{staffMember.name}</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{staffMember.email}</p>
@@ -253,11 +247,10 @@ export default function YeniRandevuPage() {
                   <div
                     key={customer.id}
                     onClick={() => setFormData({ ...formData, customerId: customer.id })}
-                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
-                      formData.customerId === customer.id
+                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${formData.customerId === customer.id
                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     <h4 className="font-medium text-gray-900 dark:text-gray-100">{customer.name}</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{customer.email}</p>
@@ -278,7 +271,7 @@ export default function YeniRandevuPage() {
               <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                 Müşteri: <span className="font-medium text-blue-600 dark:text-blue-400">{getSelectedCustomer()?.name}</span>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -295,7 +288,7 @@ export default function YeniRandevuPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Clock className="w-4 h-4 text-blue-500 dark:text-white" />
                     Saat *
                   </label>

@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
     if (!username || !password) {
       return NextResponse.json({ error: 'Eksik bilgi' }, { status: 400 });
     }
-    const user = await prisma.user.findUnique({ where: { username } });
+    const user = await prisma.user.findUnique({ 
+      where: { username },
+      include: { role: true }
+    });
     if (!user) return NextResponse.json({ error: 'Geçersiz bilgiler' }, { status: 401 });
 
     const isValid = user.password.startsWith('$') ? await bcrypt.compare(password, user.password) : user.password === password;
@@ -28,7 +31,17 @@ export async function POST(req: NextRequest) {
       .setExpirationTime('7d')
       .sign(secret);
 
-    const res = NextResponse.json({ ok: true });
+    const res = NextResponse.json({ 
+      ok: true, 
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        roleId: user.roleId,
+        role: user.role
+      }
+    });
     res.cookies.set('wk_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', path: '/', maxAge: 60 * 60 * 24 * 7 });
     return res;
   } catch (e: any) {

@@ -92,6 +92,7 @@ interface AppContextType {
   customers: Customer[];
   appointments: Appointment[];
   cashTransactions: CashTransaction[];
+  roles: Role[];
   // Auth
   users: User[];
   currentUser: User | null;
@@ -107,6 +108,9 @@ interface AppContextType {
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   addUser: (user: Omit<User, 'id' | 'createdAt'>) => Promise<boolean>;
+  updateUser: (id: string, user: Partial<User>) => Promise<boolean>;
+  deleteUser: (id: string) => Promise<boolean>;
+  addRole: (role: Omit<Role, 'id' | 'createdAt'>) => Promise<boolean>;
   
   // Business actions
   addBusiness: (business: Omit<Business, 'id' | 'createdAt'>) => void;
@@ -139,12 +143,21 @@ interface AppContextType {
   deleteCashTransaction: (id: string) => void;
 }
 
+export interface Role {
+  id: string;
+  name: string;
+  allowedMenus: string[];
+  createdAt: Date;
+}
+
 export interface User {
   id: string;
   firstName: string;
   lastName: string;
   username: string;
   password: string;
+  roleId?: string;
+  role?: Role;
   createdAt: Date;
 }
 
@@ -166,14 +179,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
   
   // Auth state
   const [users, setUsers] = useState<User[]>([]);
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [mounted, setMounted] = useState(false);
+  
+  // Client-side initialization
+  useEffect(() => {
+    setMounted(true);
     try {
-      const storedCurrentUser = typeof window !== 'undefined' ? localStorage.getItem('wk_current_user') : null;
-      return storedCurrentUser ? JSON.parse(storedCurrentUser) : null;
+      const storedCurrentUser = localStorage.getItem('wk_current_user');
+      if (storedCurrentUser) {
+        setCurrentUser(JSON.parse(storedCurrentUser));
+      }
     } catch {
-      return null;
+      // Ignore localStorage errors
     }
-  });
+  }, []);
   
   // UI state
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -189,16 +210,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Load initial data from API
   useEffect(() => {
+    if (!mounted) return;
+    
     (async () => {
       try {
-        const [b, s, st, c, a, ct, u] = await Promise.all([
+        const [b, s, st, c, a, ct, u, r] = await Promise.all([
           fetch('/api/businesses'),
           fetch('/api/services'),
           fetch('/api/staff'),
           fetch('/api/customers'),
           fetch('/api/appointments'),
           fetch('/api/cash-transactions'),
-          fetch('/api/users')
+          fetch('/api/users'),
+          fetch('/api/roles')
         ]);
         setBusinesses(await b.json());
         setServices(await s.json());
@@ -207,20 +231,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setAppointments(await a.json());
         setCashTransactions(await ct.json());
         setUsers(await u.json());
+        setRoles(await r.json());
       } catch {}
     })();
-  }, []);
+  }, [mounted]);
 
   // Auth actions
   const login = async (username: string, password: string) => {
     try {
       const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
       if (!res.ok) return false;
-      // fetch user profile minimal
-      const me = await fetch('/api/users');
-      const list = await me.json();
-      const u = (list as any[]).find(x => x.username === username) || null;
-      setCurrentUser(u);
+      const data = await res.json();
+      if (data.user) {
+        setCurrentUser(data.user);
+        localStorage.setItem('wk_current_user', JSON.stringify(data.user));
+      }
       return true;
     } catch {
       return false;
@@ -230,6 +255,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try { await fetch('/api/auth/logout', { method: 'POST' }); } catch {}
     setCurrentUser(null);
+    localStorage.removeItem('wk_current_user');
   };
 
   const addUser = async (user: Omit<User, 'id' | 'createdAt'>) => {
@@ -240,6 +266,45 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const listRes = await fetch('/api/users');
       const list = await listRes.json();
       setUsers(list);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const updateUser = async (id: string, user: Partial<User>) => {
+    try {
+      const res = await fetch('/api/users', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ...user }) });
+      if (!res.ok) return false;
+      const listRes = await fetch('/api/users');
+      const list = await listRes.json();
+      setUsers(list);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const deleteUser = async (id: string) => {
+    try {
+      const res = await fetch(`/api/users?id=${id}`, { method: 'DELETE' });
+      if (!res.ok) return false;
+      const listRes = await fetch('/api/users');
+      const list = await listRes.json();
+      setUsers(list);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const addRole = async (role: Omit<Role, 'id' | 'createdAt'>) => {
+    try {
+      const res = await fetch('/api/roles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...role }) });
+      if (!res.ok) return false;
+      const listRes = await fetch('/api/roles');
+      const list = await listRes.json();
+      setRoles(list);
       return true;
     } catch {
       return false;
@@ -352,6 +417,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       customers,
       appointments,
       cashTransactions,
+      roles,
       users,
       currentUser,
       sidebarOpen,
@@ -361,6 +427,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       addUser,
+      updateUser,
+      deleteUser,
+      addRole,
       addBusiness,
       updateBusiness,
       deleteBusiness,

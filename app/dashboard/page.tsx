@@ -9,6 +9,29 @@ import { tr } from 'date-fns/locale';
 
 export default function Dashboard() {
   const { businesses, services, staff, customers, appointments, cashTransactions } = useApp();
+  const [mounted, setMounted] = React.useState(false);
+  
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  if (!mounted) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
+          <h1 className="text-2xl font-bold mb-2">Yükleniyor...</h1>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 animate-pulse">
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   // Calculate stats
   const totalRevenue = appointments
@@ -67,7 +90,6 @@ export default function Dashboard() {
       {/* Welcome */}
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
         <h1 className="text-2xl font-bold mb-2">Webkeller Yönetim Paneline Hoş Geldiniz! 👋</h1>
-        
       </div>
 
       {/* Stats Grid */}

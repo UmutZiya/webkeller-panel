@@ -19,7 +19,8 @@ import {
   UserPlus,
   List,
   Plus,
-  CalendarPlus
+  CalendarPlus,
+  Sparkles
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
@@ -114,9 +115,66 @@ const menuItems: MenuItem[] = [
 ];
 
 export function Sidebar() {
-  const { sidebarOpen, setSidebarOpen } = useApp();
+  const { sidebarOpen, setSidebarOpen, currentUser } = useApp();
   const [expandedItems, setExpandedItems] = useState<string[]>(['İŞLETMEM']);
   const pathname = usePathname();
+
+  // Client-side rendering için state kullan
+  const [mounted, setMounted] = React.useState(false);
+  
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Kullanıcının rolüne göre menüleri filtrele
+  const filterMenusByRole = (items: MenuItem[]): MenuItem[] => {
+    // Server-side rendering sırasında tüm menüleri göster
+    if (!mounted) return items;
+    
+    // Eğer kullanıcının rolü yoksa, allowedMenus yoksa veya boş array ise tüm menüleri göster
+    if (!currentUser?.role?.allowedMenus || 
+        currentUser.role.allowedMenus.length === 0 || 
+        (Array.isArray(currentUser.role.allowedMenus) && currentUser.role.allowedMenus.length === 0)) {
+      return items;
+    }
+    
+    const allowedMenus = currentUser.role.allowedMenus;
+    
+    return items.map(item => {
+      // Ana sayfa herkese açık
+      if (item.href === '/dashboard') return item;
+      
+      // Menü kontrolü - daha esnek matching
+      const menuKey = item.title.toLowerCase().replace(/[^a-z]/g, '');
+      const hasAccess = allowedMenus.some(menu => {
+        const cleanMenu = menu.toLowerCase().replace(/[^a-z]/g, '');
+        return cleanMenu === menuKey || 
+               menuKey.includes(cleanMenu) ||
+               cleanMenu.includes(menuKey) ||
+               menu === 'kullanicilar' && menuKey === 'kullanicilar';
+      });
+      
+      if (!hasAccess) return null;
+      
+      if (item.children) {
+        // Alt menüleri de filtrele
+        const filteredChildren = item.children.filter(child => {
+          const childKey = child.title.toLowerCase().replace(/[^a-z]/g, '');
+          return allowedMenus.some(menu => {
+            const cleanMenu = menu.toLowerCase().replace(/[^a-z]/g, '');
+            return cleanMenu === childKey ||
+                   childKey.includes(cleanMenu) ||
+                   cleanMenu.includes(childKey);
+          });
+        });
+        return { ...item, children: filteredChildren };
+      }
+      
+      return item;
+    }).filter(Boolean) as MenuItem[];
+  };
+
+  const filteredMenuItems = filterMenusByRole(menuItems);
 
   const toggleExpanded = (title: string) => {
     setExpandedItems(prev =>
@@ -132,42 +190,81 @@ export function Sidebar() {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center space-x-3">
-          <div className="w-full flex justify-center items-center my-2">
-            <div className="bg-white/80 dark:bg-gray-900/80 rounded-3xl shadow-xl border border-blue-200 dark:border-gray-700 p-4 flex items-center justify-center transition-all duration-300 hover:scale-105" style={{ minWidth: 0 }}>
-              {/* Aydınlık mod logosu */}
-              <Image
-                src="/maviwebkeller.png"
-                alt="Logo"
-                width={180}
-                height={60}
-                className="object-contain block dark:hidden mx-auto"
-                priority
-              />
-              {/* Karanlık mod logosu */}
-              <Image
-                src="/beyazwebkeller.png"
-                alt="Logo"
-                width={180}
-                height={60}
-                className="object-contain hidden dark:block mx-auto"
-                priority
-              />
+      <div className="relative overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
+        
+        <div className="relative flex items-center justify-between p-6">
+          <div className="flex-1 flex justify-center">
+            <div className="group cursor-pointer">
+              {/* Logo Container */}
+              <div className="relative">
+                {/* Glow Effect */}
+                <div className="absolute inset-0 bg-white/20 dark:bg-white/10 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+                
+                {/* Main Logo Container */}
+                <div className="relative bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/30 dark:border-slate-600/30 p-6 transition-all duration-300 group-hover:scale-105 group-hover:shadow-3xl">
+                  {/* Inner Glow */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 dark:from-blue-400/5 dark:to-purple-400/5 rounded-2xl"></div>
+                  
+                  {/* Logo Images */}
+                  <div className="relative z-10">
+                    {/* Aydınlık mod logosu */}
+                    <Image
+                      src="/maviwebkeller.png"
+                      alt="WebKeller Logo"
+                      width={200}
+                      height={70}
+                      className="object-contain block dark:hidden mx-auto transition-all duration-300 group-hover:brightness-110"
+                      priority
+                    />
+                    {/* Karanlık mod logosu */}
+                    <Image
+                      src="/beyazwebkeller.png"
+                      alt="WebKeller Logo"
+                      width={200}
+                      height={70}
+                      className="object-contain hidden dark:block mx-auto transition-all duration-300 group-hover:brightness-110"
+                      priority
+                    />
+                  </div>
+                  
+                  {/* Decorative Corner Elements */}
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-60"></div>
+                  <div className="absolute bottom-2 left-2 w-1.5 h-1.5 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-40"></div>
+                </div>
+                
+                {/* Subtitle */}
+                <div className="mt-3 text-center">
+                  <p className="text-xs font-medium text-white/80 dark:text-slate-300 tracking-wider uppercase">
+                    Yönetim Paneli
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+          
+          {/* Close Button */}
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden absolute top-4 right-4 p-2 rounded-xl bg-white/20 hover:bg-white/30 dark:bg-slate-700/50 dark:hover:bg-slate-600/50 backdrop-blur-sm border border-white/20 dark:border-slate-600/30 transition-all duration-200 group"
+          >
+            <X className="w-5 h-5 text-white dark:text-slate-300 group-hover:rotate-90 transition-transform duration-200" />
+          </button>
         </div>
-        <button
-          onClick={() => setSidebarOpen(false)}
-          className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        
+        {/* Bottom Border with Gradient */}
+        <div className="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-slate-500/30"></div>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-        {menuItems.map((item) => (
+        {filteredMenuItems.map((item) => (
           <div key={item.title}>
             {item.href ? (
               <Link

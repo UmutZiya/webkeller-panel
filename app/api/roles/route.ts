@@ -8,10 +8,10 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { name } = await req.json();
+    const { name, allowedMenus } = await req.json();
     const trimmed = (name || '').trim();
-    if (!trimmed) return NextResponse.json({ error: 'Geçersiz isim' }, { status: 400 });
-    const created = await prisma.role.create({ data: { name: trimmed } });
+    if (!trimmed || !allowedMenus) return NextResponse.json({ error: 'Geçersiz veri' }, { status: 400 });
+    const created = await prisma.role.create({ data: { name: trimmed, allowedMenus } });
     return NextResponse.json(created);
   } catch (e) {
     return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 });
