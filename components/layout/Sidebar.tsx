@@ -25,7 +25,9 @@ import {
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 
+
 interface MenuItem {
+  id: string;
   title: string;
   href?: string;
   icon: React.ComponentType<any>;
@@ -34,35 +36,42 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   {
+    id: 'dashboard',
     title: 'Ana Sayfa',
     href: '/dashboard',
     icon: Home
   },
   {
+    id: 'isletmem',
     title: 'İŞLETMEM',
     icon: Building2,
     children: [
       {
+        id: 'isletmelerim',
         title: 'İşletmelerim',
         href: '/dashboard/isletmem/isletmelerim',
         icon: Building2
       },
       {
+        id: 'hizmetler',
         title: 'Hizmetler',
         href: '/dashboard/isletmem/hizmetler',
         icon: Briefcase
       },
       {
+        id: 'personel',
         title: 'Personel Yönetimi',
         href: '/dashboard/isletmem/personel',
         icon: Users
       },
       {
+        id: 'kasa-raporu',
         title: 'Kasa Raporu',
         href: '/dashboard/isletmem/kasa-raporu',
         icon: Calendar
       },
       {
+        id: 'kasa',
         title: 'Kasa',
         href: '/dashboard/isletmem/kasa',
         icon: List
@@ -70,15 +79,18 @@ const menuItems: MenuItem[] = [
     ]
   },
   {
+    id: 'musteriler',
     title: 'MÜŞTERİLER',
     icon: Users,
     children: [
       {
+        id: 'musteri-ekle',
         title: 'Müşteri Ekle',
         href: '/dashboard/musteriler/ekle',
         icon: UserPlus
       },
       {
+        id: 'musteri-liste',
         title: 'Müşteri Listesi',
         href: '/dashboard/musteriler/liste',
         icon: List
@@ -86,15 +98,18 @@ const menuItems: MenuItem[] = [
     ]
   },
   {
+    id: 'randevu',
     title: 'RANDEVU',
     icon: Calendar,
     children: [
       {
+        id: 'randevu-yeni',
         title: 'Yeni Randevu',
         href: '/dashboard/randevu/yeni',
         icon: CalendarPlus
       },
       {
+        id: 'randevu-liste',
         title: 'Randevu Listesi',
         href: '/dashboard/randevu/liste',
         icon: List
@@ -102,10 +117,12 @@ const menuItems: MenuItem[] = [
     ]
   },
   {
+    id: 'kullanicilar',
     title: 'KULLANICILAR',
     icon: Users,
     children: [
       {
+        id: 'kullanici-yonetimi',
         title: 'Kullanıcı Yönetimi',
         href: '/dashboard/kullanicilar',
         icon: Users
@@ -116,62 +133,57 @@ const menuItems: MenuItem[] = [
 
 export function Sidebar() {
   const { sidebarOpen, setSidebarOpen, currentUser } = useApp();
-  const [expandedItems, setExpandedItems] = useState<string[]>(['İŞLETMEM']);
-  const pathname = usePathname();
-
   // Client-side rendering için state kullan
   const [mounted, setMounted] = React.useState(false);
-  
   React.useEffect(() => {
     setMounted(true);
   }, []);
+  // allowedMenus'da alt menü varsa ana menü expanded olmalı
+  const allowedMenus = currentUser?.role?.allowedMenus || [];
+  const getDefaultExpanded = () => {
+    if (!mounted) return [];
+    return menuItems
+      .filter(item =>
+        item.children &&
+        item.children.some(child => allowedMenus.includes(child.id))
+      )
+      .map(item => item.title);
+  };
+  const [expandedItems, setExpandedItems] = useState<string[]>(getDefaultExpanded());
+  // allowedMenus değişirse expandedItems güncellensin
+  React.useEffect(() => {
+    setExpandedItems(getDefaultExpanded());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(allowedMenus), mounted]);
+  const pathname = usePathname();
 
   // Kullanıcının rolüne göre menüleri filtrele
   const filterMenusByRole = (items: MenuItem[]): MenuItem[] => {
-    // Server-side rendering sırasında tüm menüleri göster
     if (!mounted) return items;
-    
-    // Eğer kullanıcının rolü yoksa, allowedMenus yoksa veya boş array ise tüm menüleri göster
-    if (!currentUser?.role?.allowedMenus || 
-        currentUser.role.allowedMenus.length === 0 || 
-        (Array.isArray(currentUser.role.allowedMenus) && currentUser.role.allowedMenus.length === 0)) {
-      return items;
+    if (!currentUser?.role?.allowedMenus || currentUser.role.allowedMenus.length === 0) {
+      return [];
     }
-    
     const allowedMenus = currentUser.role.allowedMenus;
-    
-    return items.map(item => {
-      // Ana sayfa herkese açık
-      if (item.href === '/dashboard') return item;
-      
-      // Menü kontrolü - daha esnek matching
-      const menuKey = item.title.toLowerCase().replace(/[^a-z]/g, '');
-      const hasAccess = allowedMenus.some(menu => {
-        const cleanMenu = menu.toLowerCase().replace(/[^a-z]/g, '');
-        return cleanMenu === menuKey || 
-               menuKey.includes(cleanMenu) ||
-               cleanMenu.includes(menuKey) ||
-               menu === 'kullanicilar' && menuKey === 'kullanicilar';
-      });
-      
-      if (!hasAccess) return null;
-      
-      if (item.children) {
-        // Alt menüleri de filtrele
-        const filteredChildren = item.children.filter(child => {
-          const childKey = child.title.toLowerCase().replace(/[^a-z]/g, '');
-          return allowedMenus.some(menu => {
-            const cleanMenu = menu.toLowerCase().replace(/[^a-z]/g, '');
-            return cleanMenu === childKey ||
-                   childKey.includes(cleanMenu) ||
-                   cleanMenu.includes(childKey);
-          });
-        });
-        return { ...item, children: filteredChildren };
-      }
-      
-      return item;
-    }).filter(Boolean) as MenuItem[];
+    return items
+      .map(item => {
+        // Ana menü veya alt menü allowedMenus'da varsa göster
+        if (allowedMenus.includes(item.id)) {
+          if (item.children) {
+            // Alt menüleri de allowedMenus ile filtrele
+            const filteredChildren = item.children.filter(child => allowedMenus.includes(child.id));
+            return { ...item, children: filteredChildren };
+          }
+          return item;
+        } else if (item.children) {
+          // Ana menü allowedMenus'da yoksa ama alt menülerden biri varsa, sadece o alt menüleri göster
+          const filteredChildren = item.children.filter(child => allowedMenus.includes(child.id));
+          if (filteredChildren.length > 0) {
+            return { ...item, children: filteredChildren };
+          }
+        }
+        return null;
+      })
+      .filter(Boolean) as MenuItem[];
   };
 
   const filteredMenuItems = filterMenusByRole(menuItems);
