@@ -73,7 +73,7 @@ export default function PersonelPage() {
   };
 
   const getBusinessName = (businessId: string) => 
-    businesses.find(b => b.id === businessId)?.name || 'Bilinmeyen İşletme';
+    businesses.find(b => b.id === businessId)?.name || 'Bilinmeyen Şube';
 
   const getServiceNames = (serviceIds: string[] = []) => 
     (serviceIds || []).map(id => services.find(s => s.id === id)?.name).filter(Boolean).join(', ') || 'Hizmet yok';
@@ -101,7 +101,7 @@ export default function PersonelPage() {
       accessor: 'phone' as keyof Staff
     },
     {
-      header: 'İşletme',
+      header: 'Şube',
       accessor: 'businessId' as keyof Staff,
       render: (value: string) => (
         <span className="text-blue-600 dark:text-blue-400 font-medium">{getBusinessName(value)}</span>
@@ -127,7 +127,7 @@ export default function PersonelPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Personel Yönetimi</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            İşletmelerinizin personellerini yönetin
+            Şubelerinizin personellerini yönetin
           </p>
         </div>
       </div>
@@ -154,7 +154,7 @@ export default function PersonelPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  İşletme *
+                  Şube *
                 </label>
                 <select
                   required
@@ -162,7 +162,7 @@ export default function PersonelPage() {
                   onChange={(e) => setFormData({ ...formData, businessId: e.target.value, serviceIds: [] })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                 >
-                  <option value="">İşletme seçin</option>
+                  <option value="">Şube seçin</option>
                   {businesses.map(business => (
                     <option key={business.id} value={business.id}>{business.name}</option>
                   ))}
@@ -243,7 +243,7 @@ export default function PersonelPage() {
                         );
                       })
                     ) : (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Bu işletme için henüz hizmet yok</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Bu şube için henüz hizmet yok</p>
                     )}
                   </div>
                 </div>

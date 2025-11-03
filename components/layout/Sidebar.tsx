@@ -20,7 +20,9 @@ import {
   List,
   Plus,
   CalendarPlus,
-  Sparkles
+  Sparkles,
+  Globe,
+  Palette
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
@@ -48,7 +50,7 @@ const menuItems: MenuItem[] = [
     children: [
       {
         id: 'isletmelerim',
-        title: 'İşletmelerim',
+        title: 'Şubelerim',
         href: '/dashboard/isletmem/isletmelerim',
         icon: Building2
       },
@@ -117,6 +119,31 @@ const menuItems: MenuItem[] = [
     ]
   },
   {
+    id: 'websitem',
+    title: 'WEBSİTEM',
+    icon: Globe,
+    children: [
+      {
+        id: 'websitem-icerik',
+        title: 'Websitem',
+        href: '/dashboard/websitem',
+        icon: Globe
+      },
+      {
+        id: 'temalarim',
+        title: 'Temalarım',
+        href: '/dashboard/websitem/temalarim',
+        icon: Palette
+      },
+      {
+        id: 'websitem-ayarlar',
+        title: 'Ayarlar',
+        href: '/dashboard/websitem/ayarlar',
+        icon: Settings
+      }
+    ]
+  },
+  {
     id: 'kullanicilar',
     title: 'KULLANICILAR',
     icon: Users,
@@ -169,9 +196,8 @@ export function Sidebar() {
         // Ana menü veya alt menü allowedMenus'da varsa göster
         if (allowedMenus.includes(item.id)) {
           if (item.children) {
-            // Alt menüleri de allowedMenus ile filtrele
-            const filteredChildren = item.children.filter(child => allowedMenus.includes(child.id));
-            return { ...item, children: filteredChildren };
+            // Ebeveyn menü yetkisi varsa tüm alt menüleri göster
+            return { ...item, children: item.children };
           }
           return item;
         } else if (item.children) {

@@ -47,7 +47,7 @@ export default function IsletmelerimPage() {
   };
 
   const handleDelete = (business: Business) => {
-    if (confirm(`${business.name} işletmesini silmek istediğinizden emin misiniz?`)) {
+    if (confirm(`${business.name} şubesini silmek istediğinizden emin misiniz?`)) {
       deleteBusiness(business.id);
     }
   };
@@ -65,7 +65,7 @@ export default function IsletmelerimPage() {
 
   const columns = [
     {
-      header: 'İşletme Adı',
+      header: 'Şube Adı',
       accessor: 'name' as keyof Business,
       render: (value: string) => (
         <span className="font-medium text-gray-900 dark:text-gray-100">{value}</span>
@@ -97,9 +97,9 @@ export default function IsletmelerimPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">İşletmelerim</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Şubelerim</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            İşletmelerinizi ekleyin, düzenleyin ve yönetin
+            Şubelerinizi ekleyin, düzenleyin ve yönetin
           </p>
         </div>
       </div>
@@ -107,12 +107,12 @@ export default function IsletmelerimPage() {
       <DataTable
         data={businesses}
         columns={columns}
-        title="İşletme Listesi"
-        searchPlaceholder="İşletme ara..."
+        title="Şube Listesi"
+        searchPlaceholder="Şube ara..."
         onAdd={handleAdd}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        addButtonText="Yeni İşletme"
+        addButtonText="Yeni Şube"
       />
 
       {/* Modal */}
@@ -120,13 +120,13 @@ export default function IsletmelerimPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl max-w-md w-full p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {editingBusiness ? 'İşletme Düzenle' : 'Yeni İşletme'}
+              {editingBusiness ? 'Şube Düzenle' : 'Yeni Şube'}
             </h3>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  İşletme Adı *
+                  Şube Adı *
                 </label>
                 <input
                   type="text"
@@ -134,7 +134,7 @@ export default function IsletmelerimPage() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="İşletme adını girin"
+                  placeholder="Şube adını girin"
                 />
               </div>
 
@@ -148,7 +148,7 @@ export default function IsletmelerimPage() {
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="İşletme adresini girin"
+                  placeholder="Şube adresini girin"
                 />
               </div>
 

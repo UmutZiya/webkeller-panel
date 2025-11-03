@@ -57,7 +57,7 @@ export default function Dashboard() {
     .slice(0, 5);
 
   const getBusinessName = (businessId: string) => 
-    businesses.find(b => b.id === businessId)?.name || 'Bilinmeyen İşletme';
+    businesses.find(b => b.id === businessId)?.name || 'Bilinmeyen Şube';
 
   const getServiceName = (serviceId: string) => 
     services.find(s => s.id === serviceId)?.name || 'Bilinmeyen Hizmet';
@@ -95,7 +95,7 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Toplam İşletme"
+          title="Toplam Şube"
           value={businesses.length}
           icon={Building2}
           color="blue"
@@ -222,7 +222,7 @@ export default function Dashboard() {
             className="flex items-center p-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
           >
             <Building2 className="w-6 h-6 mr-3" />
-            <span className="font-medium">İşletme Ekle</span>
+            <span className="font-medium">Şube Ekle</span>
           </a>
           <a
             href="/dashboard/isletmem/hizmetler"

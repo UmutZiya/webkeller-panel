@@ -21,7 +21,12 @@ const availableMenus = [
   { id: 'kasa-raporu', label: 'Kasa Raporu' },
   { id: 'musteriler', label: 'Müşteriler' },
   { id: 'randevu', label: 'Randevu' },
-  { id: 'kullanicilar', label: 'Kullanıcılar' }
+  { id: 'kullanicilar', label: 'Kullanıcılar' },
+  // Websitem Menüsü
+  { id: 'websitem', label: 'Websitem (Ana Menü)' },
+  { id: 'websitem-icerik', label: 'Websitem' },
+  { id: 'temalarim', label: 'Temalarım' },
+  { id: 'websitem-ayarlar', label: 'Ayarlar' }
 ];
 
 export default function KullanıcılarPage() {

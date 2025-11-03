@@ -60,7 +60,7 @@ export default function MusteriEklePage() {
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="col-span-1">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              İşletme *
+              Şube *
             </label>
             <select
               required
@@ -68,7 +68,7 @@ export default function MusteriEklePage() {
               onChange={e => setFormData({ ...formData, businessId: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100 transition-all duration-200"
             >
-              <option value="">İşletme seçin</option>
+              <option value="">Şube seçin</option>
               {businesses.map(b => (
                 <option key={b.id} value={b.id}>{b.name}</option>
               ))}

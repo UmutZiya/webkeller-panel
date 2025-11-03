@@ -74,7 +74,7 @@ export default function YeniRandevuPage() {
   };
 
   const steps = [
-    { number: 1, title: 'İşletme', icon: Building2, completed: formData.businessId !== '' },
+    { number: 1, title: 'Şube', icon: Building2, completed: formData.businessId !== '' },
     { number: 2, title: 'Hizmet', icon: Briefcase, completed: formData.serviceId !== '' },
     { number: 3, title: 'Personel', icon: Users, completed: formData.staffId !== '' },
     { number: 4, title: 'Müşteri', icon: User, completed: formData.customerId !== '' },
@@ -146,12 +146,12 @@ export default function YeniRandevuPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Step 1: İşletme Seçimi */}
+          {/* Step 1: Şube Seçimi */}
           {currentStep === 1 && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                 <Building2 className="w-5 h-5 mr-2 text-blue-500" />
-                İşletme Seçin
+                Şube Seçin
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {businesses.map(business => (
@@ -180,7 +180,7 @@ export default function YeniRandevuPage() {
                 Hizmet Seçin
               </h3>
               <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                İşletme: <span className="font-medium text-blue-600 dark:text-blue-400">{getSelectedBusiness()?.name}</span>
+                Şube: <span className="font-medium text-blue-600 dark:text-blue-400">{getSelectedBusiness()?.name}</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {getAvailableServices().map(service => (

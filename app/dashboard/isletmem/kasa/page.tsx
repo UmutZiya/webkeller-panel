@@ -160,7 +160,7 @@ export default function KasaPage() {
             <thead>
               <tr className="text-left text-gray-600 dark:text-gray-400">
                 <th className="px-4 py-2">Tarih</th>
-                <th className="px-4 py-2">İşletme</th>
+                <th className="px-4 py-2">Şube</th>
                 <th className="px-4 py-2">Tür</th>
                 <th className="px-4 py-2">Tutar</th>
                 <th className="px-4 py-2">Ödeme Türü</th>
@@ -212,7 +212,7 @@ export default function KasaPage() {
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="col-span-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">İşletme</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Şube</label>
                 <select
                   required
                   value={formData.businessId}

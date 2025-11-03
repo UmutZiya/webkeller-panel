@@ -15,6 +15,10 @@ export function Header() {
   
   React.useEffect(() => {
     setMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    if (pathname !== '/dashboard') return;
     // 15 gün sonrası için target date
     const targetDate = new Date();
     targetDate.setDate(targetDate.getDate() + 15);
@@ -31,13 +35,13 @@ export function Header() {
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [pathname]);
   const initials = React.useMemo(() => {
     if (!mounted || !currentUser) return 'U';
     return (currentUser.firstName[0] + (currentUser.lastName?.[0] || '')).toUpperCase();
   }, [mounted, currentUser]);
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 py-4">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-6 py-1">
       <div className="flex items-center justify-between">
         {/* Left side */}
         <div className="flex items-center space-x-4">
