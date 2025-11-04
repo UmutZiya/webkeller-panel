@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
 export default function MusteriListesiPage() {
-  const { customers, addCustomer, updateCustomer, deleteCustomer } = useApp();
+  const { customers, businesses, addCustomer, updateCustomer, deleteCustomer } = useApp();
   const [showModal, setShowModal] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
   const [formData, setFormData] = useState({
@@ -65,7 +65,7 @@ export default function MusteriListesiPage() {
     if (editingCustomer) {
       updateCustomer(editingCustomer.id, formData);
     } else {
-      addCustomer(formData);
+      addCustomer({ ...formData, businessId: businesses[0]?.id || 'default-business-id' });
     }
     setShowModal(false);
     resetForm();
