@@ -8,6 +8,9 @@ import { tr } from 'date-fns/locale';
 
 export default function YeniRandevuPage() {
   const { businesses, services, staff, customers, addAppointment } = useApp();
+  // Seçilen işletmeye ait müşteriler
+  const getAvailableCustomers = () =>
+    customers.filter(c => c.businessId === formData.businessId);
   const [currentStep, setCurrentStep] = useState(1);
   const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -243,7 +246,7 @@ export default function YeniRandevuPage() {
                 Personel: <span className="font-medium text-blue-600 dark:text-blue-400">{getSelectedStaff()?.name}</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
-                {customers.map(customer => (
+                {getAvailableCustomers().map(customer => (
                   <div
                     key={customer.id}
                     onClick={() => setFormData({ ...formData, customerId: customer.id })}
