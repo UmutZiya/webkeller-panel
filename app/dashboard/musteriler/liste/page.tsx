@@ -65,7 +65,7 @@ export default function MusteriListesiPage() {
     if (editingCustomer) {
       updateCustomer(editingCustomer.id, formData);
     } else {
-      addCustomer({ ...formData, businessId: businesses[0]?.id || 'default-business-id' });
+      addCustomer({ ...formData, businessId: businesses[0]?.id });
     }
     setShowModal(false);
     resetForm();

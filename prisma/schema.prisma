@@ -1,11 +1,11 @@
-// Prisma schema for MySQL
+// Prisma schema for PostgreSQL
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -84,8 +84,8 @@ model Staff {
 
 model Customer {
   id           String        @id @default(cuid())
-  businessId   String
-  business     Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  businessId   String?
+  business     Business?     @relation(fields: [businessId], references: [id], onDelete: Cascade)
   name         String
   email        String
   phone        String
