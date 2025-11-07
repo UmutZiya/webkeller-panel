@@ -139,11 +139,12 @@ ALTER TABLE "_StaffServices" ADD CONSTRAINT "_StaffServices_A_fkey" FOREIGN KEY 
 ALTER TABLE "_StaffServices" ADD CONSTRAINT "_StaffServices_B_fkey" FOREIGN KEY ("B") REFERENCES "Staff"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- Add unique constraints for many-to-many table
-CREATE UNIQUE INDEX "_StaffServices_AB_unique" ON "_StaffServices"("A", "B");
-CREATE INDEX "_StaffServices_B_index" ON "_StaffServices"("B");
+CREATE UNIQUE INDEX IF NOT EXISTS "_StaffServices_AB_unique" ON "_StaffServices"("A", "B");
+CREATE INDEX IF NOT EXISTS "_StaffServices_B_index" ON "_StaffServices"("B");
 
 -- Insert default roles
 INSERT INTO "Role" ("id", "name", "allowedMenus") VALUES 
 ('role_admin', 'Admin', '["isletmem", "musteriler", "randevu", "kullanicilar"]'),
 ('role_staff', 'Personel', '["randevu", "musteriler"]'),
-('role_accounting', 'Muhasebe', '["isletmem", "kasa"]');
+('role_accounting', 'Muhasebe', '["isletmem", "kasa"]')
+ON CONFLICT ("id") DO NOTHING;
