@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Building2, Users, Calendar, Briefcase, TrendingUp, Clock, CheckCircle, AlertCircle, Plus, List, Wallet, Crown, Zap } from 'lucide-react';
+import { Building2, Users, Calendar, Briefcase, TrendingUp, Clock, CheckCircle, AlertCircle, Plus, List, Wallet, Crown, Zap, CreditCard, ExternalLink } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { StatsCard } from '@/components/ui/StatsCard';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -388,6 +388,22 @@ export default function Dashboard() {
             </div>
             <span className="font-semibold text-center">Kasa İşlemi</span>
           </Link>
+          <a
+            href="https://odeme.webkeller.com/merchant/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex flex-col items-center justify-center p-5 text-white rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-lg relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #49b0ec 0%, #0d2494 100%)'
+            }}
+          >
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-3 group-hover:bg-white/30 transition-colors relative">
+              <CreditCard className="w-6 h-6" />
+              <ExternalLink className="w-3 h-3 absolute -top-1 -right-1 opacity-70" />
+            </div>
+            <span className="font-semibold text-center">WebkellerPay</span>
+            <div className="absolute top-2 right-2 w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
+          </a>
         </div>
       </div>
     </div>

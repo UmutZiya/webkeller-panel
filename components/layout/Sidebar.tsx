@@ -21,7 +21,9 @@ import {
   Plus,
   CalendarPlus,
   Sparkles,
-  Globe
+  Globe,
+  CreditCard,
+  ExternalLink
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
@@ -357,28 +359,57 @@ export function Sidebar() {
             )}
           </div>
         ))}
-      </nav>
+        
+        {/* WebkellerPay Button */}
+        <div className="px-4 py-2">
+          <a
+            href="https://odeme.webkeller.com/merchant/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-300 w-full group text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
+            style={{
+              background: 'linear-gradient(135deg, #49b0ec 0%, #0d2494 100%)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, #3a9bd9 0%, #0a1d7a 100%)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, #49b0ec 0%, #0d2494 100%)';
+            }}
+          >
+            <div className="flex items-center">
+              <div className="relative">
+                <CreditCard className="w-5 h-5 mr-3 transition-transform duration-300 group-hover:rotate-12" />
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
+              </div>
+              <span className="font-semibold">WebkellerPay</span>
+            </div>
+            
+          </a>
+        </div>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        <Link
-          href="/dashboard/ayarlar"
-          className={cn(
-            "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 w-full group",
-            isActive('/dashboard/ayarlar')
-              ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
-              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-          )}
-        >
-          <Settings className={cn(
-            "w-5 h-5 mr-3 transition-colors",
-            isActive('/dashboard/ayarlar')
-              ? "text-white"
-              : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-          )} />
-          Ayarlar
-        </Link>
-      </div>
+        {/* Ayarlar Button */}
+        <div className="px-4 py-2">
+          <Link
+            href="/dashboard/ayarlar"
+            onClick={() => setSidebarOpen(false)}
+            className={cn(
+              "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 w-full group",
+              isActive('/dashboard/ayarlar')
+                ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+            )}
+          >
+            <Settings className={cn(
+              "w-5 h-5 mr-3 transition-colors",
+              isActive('/dashboard/ayarlar')
+                ? "text-white"
+                : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
+            )} />
+            Ayarlar
+          </Link>
+        </div>
+      </nav>
     </div>
   );
 
