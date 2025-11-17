@@ -19,6 +19,12 @@ export default function ProtectedRoute({ allowedMenus, children }: ProtectedRout
       router.replace('/dashboard');
       return;
     }
+    
+    // Ayarlar ve Websitem sayfaları herkes için erişilebilir olmalı
+    if (pathname === '/dashboard/ayarlar' || pathname === '/dashboard/websitem') {
+      return;
+    }
+    
     // Ana sayfa hariç, yetkisi yoksa yönlendir
     if (pathname !== '/dashboard') {
       // /dashboard/alt1/alt2 gibi path'lerde hem ana hem alt segmentleri kontrol et

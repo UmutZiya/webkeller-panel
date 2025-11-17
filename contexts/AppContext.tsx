@@ -3,6 +3,25 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 // Types
+export interface Settings {
+  id: string;
+  logoLight?: string;
+  logoDark?: string;
+  businessName?: string;
+  businessEmail?: string;
+  businessPhone?: string;
+  businessAddress?: string;
+  darkMode: boolean;
+  compactMode: boolean;
+  showAnimations: boolean;
+  emailNotifications: boolean;
+  smsNotifications: boolean;
+  pushNotifications: boolean;
+  appointmentReminders: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Business {
   id: string;
   name: string;
@@ -94,6 +113,7 @@ interface AppContextType {
   appointments: Appointment[];
   cashTransactions: CashTransaction[];
   roles: Role[];
+  settings: Settings | null;
   // Auth
   users: User[];
   currentUser: User | null;
@@ -105,6 +125,8 @@ interface AppContextType {
   // Actions
   setSidebarOpen: (open: boolean) => void;
   toggleDarkMode: () => void;
+  updateSettings: (settings: Partial<Settings>) => Promise<boolean>;
+  refreshSettings: () => Promise<void>;
   // Auth actions
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
@@ -178,10 +200,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [cashTransactions, setCashTransactions] = useState<CashTransaction[]>([]);
   
+  // Settings state
+  const [settings, setSettings] = useState<Settings | null>(null);
+  
   // Auth state
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // Tüm menüleri bir dizi olarak tanımla
+  const ALL_MENUS = [
+    'dashboard', 'isletmem', 'isletmelerim', 'hizmetler', 'personel', 'personelytimi',
+    'kasa', 'kasaraporu', 'musteriler', 'musteriekle', 'musterilistesi', 'randevu',
+    'yenirandevu', 'randevulistesi', 'websitem', 'websiteyonetimi', 'kullanicilar', 'kullaniciynetimi'
+  ];
   const [mounted, setMounted] = useState(false);
   
   // Client-side initialization
@@ -201,8 +232,58 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   
+  // Load settings on mount
+  useEffect(() => {
+    if (mounted) {
+      refreshSettings();
+    }
+  }, [mounted]);
+
+  // Settings actions
+  const refreshSettings = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(data);
+        setDarkMode(data.darkMode || false);
+      }
+    } catch (error) {
+      console.error('Failed to load settings:', error);
+    }
+  };
+
+  const updateSettings = async (newSettings: Partial<Settings>): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newSettings),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(data);
+        if (newSettings.darkMode !== undefined) {
+          setDarkMode(newSettings.darkMode);
+        }
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Failed to update settings:', error);
+      return false;
+    }
+  };
+  
   // UI actions
-  const toggleDarkMode = () => setDarkMode(!darkMode);
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    updateSettings({ darkMode: newDarkMode });
+  };
   
   // Helper function to generate IDs
   const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
@@ -244,6 +325,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!res.ok) return false;
       const data = await res.json();
       if (data.user) {
+        // Eğer kullanıcı admin rolüne sahipse allowedMenus'u ALL_MENUS ile override et
+        if (data.user.role && data.user.role.name === 'Admin') {
+          data.user.role.allowedMenus = ALL_MENUS;
+        }
         setCurrentUser(data.user);
         localStorage.setItem('wk_current_user', JSON.stringify(data.user));
       }
@@ -419,12 +504,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       appointments,
       cashTransactions,
       roles,
+      settings,
       users,
       currentUser,
       sidebarOpen,
       darkMode,
       setSidebarOpen,
       toggleDarkMode,
+      updateSettings,
+      refreshSettings,
       login,
       logout,
       addUser,

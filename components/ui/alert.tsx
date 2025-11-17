@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -11,6 +12,9 @@ const alertVariants = cva(
         default: 'bg-background text-foreground',
         destructive:
           'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
+        info: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900 text-blue-900 dark:text-blue-100 [&>svg]:text-blue-600 dark:[&>svg]:text-blue-400',
+        warning: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900 text-amber-900 dark:text-amber-100 [&>svg]:text-amber-600 dark:[&>svg]:text-amber-400',
+        success: 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-900 text-green-900 dark:text-green-100 [&>svg]:text-green-600 dark:[&>svg]:text-green-400',
       },
     },
     defaultVariants: {
@@ -19,17 +23,43 @@ const alertVariants = cva(
   }
 );
 
-const Alert = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="alert"
-    className={cn(alertVariants({ variant }), className)}
-    {...props}
-  />
-));
+interface AlertProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof alertVariants> {
+  dismissible?: boolean;
+  onDismiss?: () => void;
+}
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+  ({ className, variant, dismissible, onDismiss, children, ...props }, ref) => {
+    const [isVisible, setIsVisible] = React.useState(true);
+
+    const handleDismiss = () => {
+      setIsVisible(false);
+      onDismiss?.();
+    };
+
+    if (!isVisible) return null;
+
+    return (
+      <div
+        ref={ref}
+        role="alert"
+        className={cn(alertVariants({ variant }), className)}
+        {...props}
+      >
+        {children}
+        {dismissible && (
+          <button
+            onClick={handleDismiss}
+            className="absolute top-4 right-4 rounded-md p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+            aria-label="Kapat"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+    );
+  }
+);
 Alert.displayName = 'Alert';
 
 const AlertTitle = React.forwardRef<

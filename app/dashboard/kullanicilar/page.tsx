@@ -21,6 +21,7 @@ const availableMenus = [
   { id: 'kasa-raporu', label: 'Kasa Raporu' },
   { id: 'musteriler', label: 'Müşteriler' },
   { id: 'randevu', label: 'Randevu' },
+  { id: 'websitem', label: 'Websitem' },
   { id: 'kullanicilar', label: 'Kullanıcılar' }
 ];
 

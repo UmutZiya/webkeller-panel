@@ -45,30 +45,40 @@ export function StatsCard({ title, value, icon: Icon, color, change, changeType 
   const colors = colorMap[color];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-            {title}
-          </p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {value}
-          </p>
-          {change && (
-            <p className={`text-xs mt-1 ${
-              changeType === 'positive' 
-                ? 'text-green-600 dark:text-green-400' 
-                : changeType === 'negative'
-                ? 'text-red-600 dark:text-red-400'
-                : 'text-gray-500 dark:text-gray-400'
-            }`}>
-              {change}
+    <div className="group relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+      {/* Background gradient effect */}
+      <div className={`absolute inset-0 ${colors.light} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+      
+      <div className="relative z-10">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+              {title}
             </p>
-          )}
+            <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+              {value}
+            </p>
+          </div>
+          <div className={`flex-shrink-0 w-14 h-14 ${colors.light} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md`}>
+            <Icon className={`w-7 h-7 ${colors.text}`} />
+          </div>
         </div>
-        <div className={`w-12 h-12 ${colors.light} rounded-lg flex items-center justify-center`}>
-          <Icon className={`w-6 h-6 ${colors.text}`} />
-        </div>
+        
+        {change && (
+          <div className="flex items-center gap-1 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <div className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold ${
+              changeType === 'positive' 
+                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                : changeType === 'negative'
+                ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+            }`}>
+              {changeType === 'positive' && '↑'}
+              {changeType === 'negative' && '↓'}
+              {change}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

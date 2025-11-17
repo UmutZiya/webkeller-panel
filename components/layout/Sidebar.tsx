@@ -20,7 +20,8 @@ import {
   List,
   Plus,
   CalendarPlus,
-  Sparkles
+  Sparkles,
+  Globe
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
@@ -84,13 +85,13 @@ const menuItems: MenuItem[] = [
     icon: Users,
     children: [
       {
-        id: 'musteri-ekle',
+        id: 'musteriekle',
         title: 'Müşteri Ekle',
         href: '/dashboard/musteriler/ekle',
         icon: UserPlus
       },
       {
-        id: 'musteri-liste',
+        id: 'musterilistesi',
         title: 'Müşteri Listesi',
         href: '/dashboard/musteriler/liste',
         icon: List
@@ -103,16 +104,29 @@ const menuItems: MenuItem[] = [
     icon: Calendar,
     children: [
       {
-        id: 'randevu-yeni',
+        id: 'yenirandevu',
         title: 'Yeni Randevu',
         href: '/dashboard/randevu/yeni',
         icon: CalendarPlus
       },
       {
-        id: 'randevu-liste',
+        id: 'randevulistesi',
         title: 'Randevu Listesi',
         href: '/dashboard/randevu/liste',
         icon: List
+      }
+    ]
+  },
+  {
+    id: 'websitem',
+    title: 'WEBSİTEM',
+    icon: Globe,
+    children: [
+      {
+        id: 'websiteyonetimi',
+        title: 'Website Yönetimi',
+        href: '/dashboard/websitem',
+        icon: Globe
       }
     ]
   },
@@ -122,7 +136,7 @@ const menuItems: MenuItem[] = [
     icon: Users,
     children: [
       {
-        id: 'kullanici-yonetimi',
+        id: 'kullaniciynetimi',
         title: 'Kullanıcı Yönetimi',
         href: '/dashboard/kullanicilar',
         icon: Users
@@ -132,7 +146,7 @@ const menuItems: MenuItem[] = [
 ];
 
 export function Sidebar() {
-  const { sidebarOpen, setSidebarOpen, currentUser } = useApp();
+  const { sidebarOpen, setSidebarOpen, currentUser, settings } = useApp();
   // Client-side rendering için state kullan
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
@@ -228,8 +242,8 @@ export function Sidebar() {
                   <div className="relative z-10">
                     {/* Aydınlık mod logosu */}
                     <Image
-                      src="/maviwebkeller.png"
-                      alt="WebKeller Logo"
+                      src={settings?.logoLight || '/maviwebkeller.png'}
+                      alt="Logo"
                       width={200}
                       height={70}
                       className="object-contain block dark:hidden mx-auto transition-all duration-300 group-hover:brightness-110"
@@ -237,8 +251,8 @@ export function Sidebar() {
                     />
                     {/* Karanlık mod logosu */}
                     <Image
-                      src="/beyazwebkeller.png"
-                      alt="WebKeller Logo"
+                      src={settings?.logoDark || '/beyazwebkeller.png'}
+                      alt="Logo"
                       width={200}
                       height={70}
                       className="object-contain hidden dark:block mx-auto transition-all duration-300 group-hover:brightness-110"
@@ -347,10 +361,23 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        <button className="flex items-center px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all duration-200 w-full group">
-          <Settings className="w-5 h-5 mr-3 text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300" />
+        <Link
+          href="/dashboard/ayarlar"
+          className={cn(
+            "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 w-full group",
+            isActive('/dashboard/ayarlar')
+              ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+              : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+          )}
+        >
+          <Settings className={cn(
+            "w-5 h-5 mr-3 transition-colors",
+            isActive('/dashboard/ayarlar')
+              ? "text-white"
+              : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
+          )} />
           Ayarlar
-        </button>
+        </Link>
       </div>
     </div>
   );
