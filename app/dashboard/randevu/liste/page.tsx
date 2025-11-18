@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useApp, Appointment } from '@/contexts/AppContext';
 import { DataTable } from '@/components/ui/DataTable';
+import { Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
@@ -132,13 +134,23 @@ export default function RandevuListesiPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-transition">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Randevu Listesi</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
             Tüm randevuları görüntüleyin ve yönetin
           </p>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/randevu"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
+          >
+            <Calendar className="w-4 h-4" />
+            Takvim Görünümü
+          </Link>
         </div>
       </div>
 

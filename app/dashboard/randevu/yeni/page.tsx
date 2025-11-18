@@ -36,11 +36,11 @@ export default function YeniRandevuPage() {
     setCurrentStep(1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const appointmentDate = new Date(`${formData.date}T${formData.time}`);
 
-    addAppointment({
+    await addAppointment({
       businessId: formData.businessId,
       serviceId: formData.serviceId,
       staffId: formData.staffId,
@@ -295,13 +295,26 @@ export default function YeniRandevuPage() {
                     <Clock className="w-4 h-4 text-blue-500 dark:text-white" />
                     Saat *
                   </label>
-                  <input
-                    type="time"
+                  <select
                     required
                     value={formData.time}
                     onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-                  />
+                  >
+                    <option value="">Saat seçin</option>
+                    {Array.from({ length: 10 }, (_, hour) => 
+                      Array.from({ length: 4 }, (_, quarter) => {
+                        const h = 9 + hour;
+                        const m = quarter * 15;
+                        const timeValue = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+                        return (
+                          <option key={timeValue} value={timeValue}>
+                            {timeValue}
+                          </option>
+                        );
+                      })
+                    ).flat()}
+                  </select>
                 </div>
               </div>
 

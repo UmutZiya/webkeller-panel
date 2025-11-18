@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, Bell, User, Moon, Sun, ChevronDown, LogOut, Settings, UserCircle } from 'lucide-react';
+import { Menu, Bell, User, Moon, Sun, ChevronDown, LogOut, Settings, UserCircle, Headphones } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -81,8 +81,18 @@ export function Header() {
             <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-gray-800 animate-pulse"></span>
           </button>
 
+          {/* Support Button */}
+          <button 
+            className="relative flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 group border border-transparent hover:border-blue-200 dark:hover:border-blue-800"
+            aria-label="Destek"
+            title="Destek Al"
+          >
+            <Headphones className="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-200" />
+            <span className="text-sm font-medium text-blue-600 dark:text-blue-400 hidden sm:block">Destek</span>
+          </button>
+
           {/* User Profile Dropdown */}
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">
                 <UserAvatar name={userName} size="md" />
@@ -97,7 +107,12 @@ export function Header() {
                 <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuContent 
+              align="end" 
+              side="bottom"
+              sideOffset={8}
+              className="w-64 animate-in slide-in-from-top-2 duration-200"
+            >
               {/* User Info Section */}
               <div className="flex items-center gap-3 p-3 border-b border-gray-200 dark:border-gray-700">
                 <UserAvatar name={userName} size="lg" />

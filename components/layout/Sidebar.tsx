@@ -106,6 +106,12 @@ const menuItems: MenuItem[] = [
     icon: Calendar,
     children: [
       {
+        id: 'randevutakvimi',
+        title: 'Randevu Takvimi',
+        href: '/dashboard/randevu',
+        icon: Calendar
+      },
+      {
         id: 'yenirandevu',
         title: 'Yeni Randevu',
         href: '/dashboard/randevu/yeni',
@@ -359,6 +365,28 @@ export function Sidebar() {
             )}
           </div>
         ))}
+
+        {/* Ayarlar Button */}
+        <div className="px-4 py-2">
+          <Link
+            href="/dashboard/ayarlar"
+            onClick={() => setSidebarOpen(false)}
+            className={cn(
+              "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 w-full group",
+              isActive('/dashboard/ayarlar')
+                ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+            )}
+          >
+            <Settings className={cn(
+              "w-5 h-5 mr-3 transition-colors",
+              isActive('/dashboard/ayarlar')
+                ? "text-white"
+                : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
+            )} />
+            Ayarlar
+          </Link>
+        </div>
         
         {/* WebkellerPay Button */}
         <div className="px-4 py-2">
@@ -388,27 +416,7 @@ export function Sidebar() {
           </a>
         </div>
 
-        {/* Ayarlar Button */}
-        <div className="px-4 py-2">
-          <Link
-            href="/dashboard/ayarlar"
-            onClick={() => setSidebarOpen(false)}
-            className={cn(
-              "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 w-full group",
-              isActive('/dashboard/ayarlar')
-                ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
-                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-            )}
-          >
-            <Settings className={cn(
-              "w-5 h-5 mr-3 transition-colors",
-              isActive('/dashboard/ayarlar')
-                ? "text-white"
-                : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"
-            )} />
-            Ayarlar
-          </Link>
-        </div>
+        
       </nav>
     </div>
   );

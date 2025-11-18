@@ -2,17 +2,41 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-  const list = await prisma.appointment.findMany({ orderBy: { createdAt: 'desc' } });
-  return NextResponse.json(list);
+  try {
+    const list = await prisma.appointment.findMany({ 
+      orderBy: { createdAt: 'desc' },
+      include: {
+        business: true,
+        service: true,
+        staff: true,
+        customer: true
+      }
+    });
+    console.log('Appointments fetched:', list.length);
+    return NextResponse.json(list);
+  } catch (e) {
+    console.error('GET appointments error:', e);
+    return NextResponse.json({ error: 'Veri alınamadı' }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    const created = await prisma.appointment.create({ data });
+    console.log('Creating appointment with data:', data);
+    
+    const created = await prisma.appointment.create({ 
+      data: {
+        ...data,
+        date: new Date(data.date)
+      }
+    });
+    
+    console.log('Appointment created:', created);
     return NextResponse.json(created);
   } catch (e) {
-    return NextResponse.json({ error: 'Sunucu hatası' }, { status: 500 });
+    console.error('POST appointment error:', e);
+    return NextResponse.json({ error: 'Randevu oluşturulamadı', details: e }, { status: 500 });
   }
 }
 

@@ -211,7 +211,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const ALL_MENUS = [
     'dashboard', 'isletmem', 'isletmelerim', 'hizmetler', 'personel', 'personelytimi',
     'kasa', 'kasaraporu', 'musteriler', 'musteriekle', 'musterilistesi', 'randevu',
-    'yenirandevu', 'randevulistesi', 'websitem', 'websiteyonetimi', 'kullanicilar', 'kullaniciynetimi'
+    'randevutakvimi', 'yenirandevu', 'randevulistesi', 'websitem', 'websiteyonetimi', 'kullanicilar', 'kullaniciynetimi'
   ];
   const [mounted, setMounted] = useState(false);
   
@@ -294,8 +294,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
     
-    (async () => {
+    const loadData = async () => {
       try {
+        console.log('Loading initial data...');
         const [b, s, st, c, a, ct, u, r] = await Promise.all([
           fetch('/api/businesses'),
           fetch('/api/services'),
@@ -306,16 +307,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
           fetch('/api/users'),
           fetch('/api/roles')
         ]);
+        
+        const appointments = await a.json();
+        console.log('Initial appointments loaded:', appointments.length);
+        
         setBusinesses(await b.json());
         setServices(await s.json());
         setStaff(await st.json());
         setCustomers(await c.json());
-        setAppointments(await a.json());
+        setAppointments(appointments);
         setCashTransactions(await ct.json());
         setUsers(await u.json());
         setRoles(await r.json());
-      } catch {}
-    })();
+      } catch (error) {
+        console.error('Data loading error:', error);
+      }
+    };
+    
+    loadData();
   }, [mounted]);
 
   // Auth actions
@@ -465,8 +474,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
   
   // Appointment actions
   const addAppointment = async (appointment: Omit<Appointment, 'id' | 'createdAt'>) => {
-    await fetch('/api/appointments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(appointment) });
-    setAppointments(await (await fetch('/api/appointments')).json());
+    try {
+      console.log('Adding appointment:', appointment);
+      const response = await fetch('/api/appointments', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify(appointment) 
+      });
+      
+      const result = await response.json();
+      console.log('API response:', result);
+      
+      if (response.ok) {
+        console.log('Refreshing appointments list...');
+        const refreshResponse = await fetch('/api/appointments');
+        const updatedAppointments = await refreshResponse.json();
+        console.log('Updated appointments:', updatedAppointments.length);
+        setAppointments(updatedAppointments);
+      } else {
+        console.error('API error:', result);
+      }
+    } catch (error) {
+      console.error('Randevu eklenirken hata:', error);
+    }
   };
   
   const updateAppointment = async (id: string, appointment: Partial<Appointment>) => {

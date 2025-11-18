@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Building2, Users, Calendar, Briefcase, TrendingUp, Clock, CheckCircle, AlertCircle, Plus, List, Wallet, Crown, Zap, CreditCard, ExternalLink } from 'lucide-react';
+import { Building2, Users, Calendar, Briefcase, TrendingUp, Clock, CheckCircle, AlertCircle, Plus, List, Wallet, Crown, Zap, CreditCard, ExternalLink, Headphones } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { StatsCard } from '@/components/ui/StatsCard';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -340,7 +340,7 @@ export default function Dashboard() {
             Sık kullanılan işlemler
           </p>
         </div>
-        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <Link
             href="/dashboard/randevu/yeni"
             className="group flex flex-col items-center justify-center p-5 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 hover:scale-105 hover:shadow-lg"
@@ -402,6 +402,14 @@ export default function Dashboard() {
             <span className="font-semibold text-center">WebkellerPay</span>
             <div className="absolute top-2 right-2 w-2 h-2 bg-white/30 rounded-full animate-pulse"></div>
           </a>
+          <button
+            className="group flex flex-col items-center justify-center p-5 bg-gradient-to-br from-teal-500 to-cyan-600 text-white rounded-xl hover:from-teal-600 hover:to-cyan-700 transition-all duration-200 hover:scale-105 hover:shadow-lg"
+          >
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-3 group-hover:bg-white/30 transition-colors">
+              <Headphones className="w-6 h-6" />
+            </div>
+            <span className="font-semibold text-center">Destek</span>
+          </button>
         </div>
       </div>
     </div>
