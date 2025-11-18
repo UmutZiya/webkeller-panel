@@ -16,10 +16,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { NotificationPanel } from './NotificationPanel';
 
 export function Header() {
   const { setSidebarOpen, darkMode, toggleDarkMode, currentUser, logout } = useApp();
   const [mounted, setMounted] = React.useState(false);
+  const [notificationOpen, setNotificationOpen] = React.useState(false);
 
   React.useEffect(() => {
     setMounted(true);
@@ -71,11 +73,12 @@ export function Header() {
 
           {/* Notifications */}
           <button 
-            className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            onClick={() => setNotificationOpen(true)}
+            className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 group"
             aria-label="Bildirimler"
           >
-            <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-gray-800"></span>
+            <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:scale-110 transition-transform duration-200" />
+            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-gray-800 animate-pulse"></span>
           </button>
 
           {/* User Profile Dropdown */}
@@ -140,6 +143,9 @@ export function Header() {
           </DropdownMenu>
         </div>
       </div>
+
+      {/* Notification Panel */}
+      <NotificationPanel isOpen={notificationOpen} onClose={() => setNotificationOpen(false)} />
     </header>
   );
 }

@@ -13,14 +13,14 @@ export default function Dashboard() {
   const { businesses, services, staff, customers, appointments, cashTransactions } = useApp();
   const [mounted, setMounted] = React.useState(false);
   const [timeLeft, setTimeLeft] = React.useState({ days: 15, hours: 0, minutes: 0, seconds: 0 });
-  
+
   React.useEffect(() => {
     setMounted(true);
-    
+
     // Calculate trial time left - 15 days from now
     const targetDate = new Date();
     targetDate.setDate(targetDate.getDate() + 15);
-    
+
     const updateTimer = () => {
       const now = new Date().getTime();
       const distance = targetDate.getTime() - now;
@@ -33,13 +33,13 @@ export default function Dashboard() {
         });
       }
     };
-    
+
     updateTimer();
     const timer = setInterval(updateTimer, 1000); // Update every second
-    
+
     return () => clearInterval(timer);
   }, []);
-  
+
   if (!mounted) {
     return (
       <div className="space-y-6">
@@ -53,7 +53,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-        
+
         {/* Loading Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {[...Array(4)].map((_, i) => (
@@ -68,7 +68,7 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-        
+
         {/* Loading Secondary Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {[...Array(3)].map((_, i) => (
@@ -92,7 +92,7 @@ export default function Dashboard() {
 
   const thisWeekStart = startOfWeek(new Date(), { locale: tr });
   const thisWeekEnd = endOfWeek(new Date(), { locale: tr });
-  
+
   const thisWeekAppointments = appointments.filter(apt =>
     isWithinInterval(apt.date, { start: thisWeekStart, end: thisWeekEnd })
   );
@@ -105,16 +105,16 @@ export default function Dashboard() {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5);
 
-  const getBusinessName = (businessId: string) => 
+  const getBusinessName = (businessId: string) =>
     businesses.find(b => b.id === businessId)?.name || 'Bilinmeyen İşletme';
 
-  const getServiceName = (serviceId: string) => 
+  const getServiceName = (serviceId: string) =>
     services.find(s => s.id === serviceId)?.name || 'Bilinmeyen Hizmet';
 
-  const getStaffName = (staffId: string) => 
+  const getStaffName = (staffId: string) =>
     staff.find(s => s.id === staffId)?.name || 'Bilinmeyen Personel';
 
-  const getCustomerName = (customerId: string) => 
+  const getCustomerName = (customerId: string) =>
     customers.find(c => c.id === customerId)?.name || 'Bilinmeyen Müşteri';
 
   const getStatusBadge = (status: string) => {
@@ -124,9 +124,9 @@ export default function Dashboard() {
       completed: { text: 'Tamamlandı', color: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' },
       cancelled: { text: 'İptal Edildi', color: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400' }
     };
-    
+
     const statusInfo = statusMap[status as keyof typeof statusMap] || statusMap.pending;
-    
+
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusInfo.color}`}>
         {statusInfo.text}
@@ -161,7 +161,7 @@ export default function Dashboard() {
           </div>
           <button className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:shadow-lg">
             <Crown className="h-4 w-4" />
-            Premium'a Geç
+            Premium&apos;a Geç
           </button>
         </AlertDescription>
       </Alert>
@@ -191,7 +191,7 @@ export default function Dashboard() {
       {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <StatsCard
-          title="Toplam İşletme"
+          title="Toplam Şube"
           value={businesses.length}
           icon={Building2}
           color="blue"
@@ -273,59 +273,57 @@ export default function Dashboard() {
                 .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                 .slice(0, 3)
                 .map((appointment) => (
-              <div key={appointment.id} className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 hover:shadow-sm border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
-                <div className="flex-shrink-0 mt-0.5">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <div key={appointment.id} className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 hover:shadow-sm border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
+                    <div className="flex-shrink-0 mt-0.5">
+                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                        <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        Randevu oluşturuldu
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
+                        {getCustomerName(appointment.customerId)} - {getServiceName(appointment.serviceId)}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {format(appointment.createdAt, 'dd MMM yyyy HH:mm', { locale: tr })}
+                      </p>
+                    </div>
+                    {getStatusBadge(appointment.status)}
                   </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    Randevu oluşturuldu
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
-                    {getCustomerName(appointment.customerId)} - {getServiceName(appointment.serviceId)}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {format(appointment.createdAt, 'dd MMM yyyy HH:mm', { locale: tr })}
-                  </p>
-                </div>
-                {getStatusBadge(appointment.status)}
-              </div>
-            ))}
+                ))}
 
-          {cashTransactions
-            .slice()
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-            .slice(0, 3)
-            .map((tx) => (
-              <div key={tx.id} className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 hover:shadow-sm border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
-                <div className="flex-shrink-0 mt-0.5">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    tx.type === 'income' 
-                      ? 'bg-green-100 dark:bg-green-900/30' 
-                      : 'bg-red-100 dark:bg-red-900/30'
-                  }`}>
-                    <Wallet className={`w-5 h-5 ${
-                      tx.type === 'income'
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
-                    }`} />
+              {cashTransactions
+                .slice()
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .slice(0, 3)
+                .map((tx) => (
+                  <div key={tx.id} className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 hover:shadow-sm border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
+                    <div className="flex-shrink-0 mt-0.5">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${tx.type === 'income'
+                          ? 'bg-green-100 dark:bg-green-900/30'
+                          : 'bg-red-100 dark:bg-red-900/30'
+                        }`}>
+                        <Wallet className={`w-5 h-5 ${tx.type === 'income'
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-red-600 dark:text-red-400'
+                          }`} />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {tx.type === 'income' ? 'Gelir eklendi' : 'Gider eklendi'}
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
+                        ₺{tx.amount.toFixed(2)} {tx.company ? `- ${tx.company}` : ''}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {format(tx.createdAt, 'dd MMM yyyy HH:mm', { locale: tr })}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {tx.type === 'income' ? 'Gelir eklendi' : 'Gider eklendi'}
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-0.5">
-                    ₺{tx.amount.toFixed(2)} {tx.company ? `- ${tx.company}` : ''}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {format(tx.createdAt, 'dd MMM yyyy HH:mm', { locale: tr })}
-                  </p>
-                </div>
-              </div>
-            ))}
+                ))}
             </>
           )}
         </div>
@@ -368,7 +366,7 @@ export default function Dashboard() {
             <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-3 group-hover:bg-white/30 transition-colors">
               <Building2 className="w-6 h-6" />
             </div>
-            <span className="font-semibold text-center">İşletme Ekle</span>
+            <span className="font-semibold text-center">Şube Ekle</span>
           </Link>
           <Link
             href="/dashboard/isletmem/hizmetler"

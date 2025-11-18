@@ -105,7 +105,7 @@ export default function HizmetlerPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Hizmetler</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            İşletmelerinizin sunduğu hizmetleri yönetin
+            Şubelerinizin sunduğu hizmetleri yönetin
           </p>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function HizmetlerPage() {
                   onChange={(e) => setFormData({ ...formData, businessId: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
                 >
-                  <option value="">İşletme seçin</option>
+                  <option value="">Şube seçin</option>
                   {businesses.map(business => (
                     <option key={business.id} value={business.id}>{business.name}</option>
                   ))}

@@ -154,7 +154,7 @@ export default function YeniRandevuPage() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center">
                 <Building2 className="w-5 h-5 mr-2 text-blue-500" />
-                İşletme Seçin
+                Şube Seçin
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {businesses.map(business => (

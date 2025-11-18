@@ -5,6 +5,7 @@ import { useApp, CashTransaction } from '@/contexts/AppContext';
 import { Building2, Plus, Trash2, Edit2, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { IncomeChart } from '@/components/ui/IncomeChart';
 
 export default function KasaPage() {
   const { businesses, cashTransactions, addCashTransaction, updateCashTransaction, deleteCashTransaction } = useApp();
@@ -133,6 +134,9 @@ export default function KasaPage() {
           <span className="text-green-800 dark:text-green-400 font-medium">{success}</span>
         </div>
       )}
+
+      {/* Income Chart */}
+      <IncomeChart transactions={cashTransactions} />
 
       {/* Totals */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

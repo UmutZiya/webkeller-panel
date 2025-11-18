@@ -51,7 +51,7 @@ const menuItems: MenuItem[] = [
     children: [
       {
         id: 'isletmelerim',
-        title: 'İşletmelerim',
+        title: 'Şubelerim',
         href: '/dashboard/isletmem/isletmelerim',
         icon: Building2
       },

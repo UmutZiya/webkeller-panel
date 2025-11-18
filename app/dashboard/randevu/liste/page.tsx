@@ -57,7 +57,7 @@ export default function RandevuListesiPage() {
   };
 
   const getBusinessName = (businessId: string) => 
-    businesses.find(b => b.id === businessId)?.name || 'Bilinmeyen İşletme';
+    businesses.find(b => b.id === businessId)?.name || 'Bilinmeyen Şube';
 
   const getServiceName = (serviceId: string) => 
     services.find(s => s.id === serviceId)?.name || 'Bilinmeyen Hizmet';

@@ -712,19 +712,6 @@ export default function AyarlarPage() {
                   Manuel Yedekleme Yap
                 </Button>
               </div>
-
-              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <h4 className="font-medium text-red-900 dark:text-red-100 mb-2">
-                  Tehlikeli Bölge
-                </h4>
-                <p className="text-sm text-red-700 dark:text-red-300 mb-3">
-                  Bu işlemler geri alınamaz. Dikkatli olun!
-                </p>
-                <Button variant="destructive">
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Tüm Verileri Sil
-                </Button>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
