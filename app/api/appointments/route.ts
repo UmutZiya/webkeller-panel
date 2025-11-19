@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const list = await prisma.appointment.findMany({ 
@@ -14,9 +18,10 @@ export async function GET() {
     });
     console.log('Appointments fetched:', list.length);
     return NextResponse.json(list);
-  } catch (e) {
-    console.error('GET appointments error:', e);
-    return NextResponse.json({ error: 'Veri alınamadı' }, { status: 500 });
+  } catch (e: any) {
+    console.error('GET /api/appointments error:', e);
+    const message = process.env.NODE_ENV !== 'production' ? (e?.message || 'Unknown error') : 'Veri alınamadı';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -34,9 +39,10 @@ export async function POST(req: NextRequest) {
     
     console.log('Appointment created:', created);
     return NextResponse.json(created);
-  } catch (e) {
-    console.error('POST appointment error:', e);
-    return NextResponse.json({ error: 'Randevu oluşturulamadı', details: e }, { status: 500 });
+  } catch (e: any) {
+    console.error('POST /api/appointments error:', e);
+    const message = process.env.NODE_ENV !== 'production' ? (e?.message || 'Unknown error') : 'Randevu oluşturulamadı';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
