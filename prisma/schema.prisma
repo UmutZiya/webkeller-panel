@@ -1,11 +1,11 @@
-// Prisma schema for MySQL
+// Prisma schema for PostgreSQL
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -138,12 +138,12 @@ model CashTransaction {
 
 model Settings {
   id                String   @id @default(cuid())
-  logoLight         String?  @db.LongText // Base64 encoded light theme logo
-  logoDark          String?  @db.LongText // Base64 encoded dark theme logo
+  logoLight         String?  // Base64 encoded light theme logo
+  logoDark          String?  // Base64 encoded dark theme logo
   businessName      String?
   businessEmail     String?
   businessPhone     String?
-  businessAddress   String?  @db.Text
+  businessAddress   String?
   darkMode          Boolean  @default(false)
   compactMode       Boolean  @default(false)
   showAnimations    Boolean  @default(true)
