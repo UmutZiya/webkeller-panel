@@ -5,15 +5,26 @@ const prisma = new PrismaClient();
 
 async function createAdminUser() {
   try {
+    // Tüm menü ID'leri - Super Admin her şeyi görebilmeli
+    const allMenus = [
+      "dashboard",
+      "isletmem", "isletmelerim", "hizmetler", "personel", "kasa-raporu", "kasa",
+      "musteriler", "musteriekle", "musterilistesi",
+      "randevu", "randevutakvimi", "yenirandevu", "randevulistesi",
+      "websitem", "websiteyonetimi",
+      "kullanicilar", "kullaniciynetimi",
+      "roller", "ayarlar"
+    ];
+
     // Önce admin rolünü oluştur veya güncelle (tüm menü yetkilerini ver)
     const adminRole = await prisma.role.upsert({
       where: { name: 'Super Admin' },
       update: {
-        allowedMenus: [] // Boş array = tüm menülere erişim
+        allowedMenus: allMenus
       },
       create: {
         name: 'Super Admin',
-        allowedMenus: [] // Boş array = tüm menülere erişim
+        allowedMenus: allMenus
       },
     });
 
