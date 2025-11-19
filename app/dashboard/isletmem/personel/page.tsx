@@ -20,10 +20,26 @@ export default function PersonelPage() {
     address: '',
     notes: ''
   });
+  const [errors, setErrors] = useState({
+    phone: '',
+    nationalId: ''
+  });
+
+  const validatePhone = (phone: string) => {
+    // +905xxxxxxxxx formatı - toplam 13 karakter
+    const phoneRegex = /^\+90[0-9]{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validateNationalId = (nationalId: string) => {
+    // 11 haneli TC kimlik numarası
+    return /^[0-9]{11}$/.test(nationalId);
+  };
 
   const resetForm = () => {
     setFormData({ name: '', email: '', phone: '', businessId: '', serviceIds: [], nationalId: '', address: '', notes: '' });
     setEditingStaff(null);
+    setErrors({ phone: '', nationalId: '' });
   };
 
   const handleAdd = () => {
@@ -54,6 +70,24 @@ export default function PersonelPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validasyon kontrolü
+    const newErrors = { phone: '', nationalId: '' };
+    
+    if (!validatePhone(formData.phone)) {
+      newErrors.phone = 'Telefon numarası +905xxxxxxxxx formatında olmalıdır (13 karakter)';
+    }
+    
+    if (formData.nationalId && !validateNationalId(formData.nationalId)) {
+      newErrors.nationalId = 'T.C. Kimlik No 11 haneli olmalıdır';
+    }
+    
+    setErrors(newErrors);
+    
+    if (newErrors.phone || newErrors.nationalId) {
+      return;
+    }
+    
     if (editingStaff) {
       updateStaff(editingStaff.id, formData);
     } else {
@@ -61,6 +95,38 @@ export default function PersonelPage() {
     }
     setShowModal(false);
     resetForm();
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    // Sadece rakam ve + işaretine izin ver
+    value = value.replace(/[^0-9+]/g, '');
+    // + işareti sadece başta olabilir
+    if (value.includes('+') && !value.startsWith('+')) {
+      value = value.replace(/\+/g, '');
+    }
+    // Maksimum 13 karakter
+    if (value.length > 13) {
+      value = value.substring(0, 13);
+    }
+    setFormData({ ...formData, phone: value });
+    if (errors.phone) {
+      setErrors({ ...errors, phone: '' });
+    }
+  };
+
+  const handleNationalIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    // Sadece rakamlara izin ver
+    value = value.replace(/[^0-9]/g, '');
+    // Maksimum 11 karakter
+    if (value.length > 11) {
+      value = value.substring(0, 11);
+    }
+    setFormData({ ...formData, nationalId: value });
+    if (errors.nationalId) {
+      setErrors({ ...errors, nationalId: '' });
+    }
   };
 
   const handleServiceToggle = (serviceId: string) => {
@@ -205,10 +271,14 @@ export default function PersonelPage() {
                   type="tel"
                   required
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="+90 XXX XXX XX XX"
+                  onChange={handlePhoneChange}
+                  className={`w-full px-3 py-2 border ${errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100`}
+                  placeholder="+905340103014"
+                  maxLength={13}
                 />
+                {errors.phone && (
+                  <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+                )}
               </div>
 
               {formData.businessId && (
@@ -252,15 +322,19 @@ export default function PersonelPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    T.C. Kimlik No
+                    T.C. Kimlik No (11 haneli)
                   </label>
                   <input
                     type="text"
                     value={formData.nationalId}
-                    onChange={(e) => setFormData({ ...formData, nationalId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-                    placeholder="11 haneli T.C. Kimlik No"
+                    onChange={handleNationalIdChange}
+                    className={`w-full px-3 py-2 border ${errors.nationalId ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100`}
+                    placeholder="12345678901"
+                    maxLength={11}
                   />
+                  {errors.nationalId && (
+                    <p className="mt-1 text-sm text-red-500">{errors.nationalId}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

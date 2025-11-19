@@ -24,10 +24,26 @@ export default function MusteriListesiPage() {
     address: '',
     notes: ''
   });
+  const [errors, setErrors] = useState({
+    phone: '',
+    taxNumber: ''
+  });
+
+  const validatePhone = (phone: string) => {
+    // +905xxxxxxxxx formatı - toplam 13 karakter
+    const phoneRegex = /^\+90[0-9]{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validateTaxNumber = (taxNumber: string) => {
+    // 10 haneli vergi numarası
+    return /^[0-9]{10}$/.test(taxNumber);
+  };
 
   const resetForm = () => {
     setFormData({ name: '', email: '', phone: '', taxNumber: '', taxOffice: '', companyName: '', city: '', district: '', customerType: 'individual', website: '', address: '', notes: '' });
     setEditingCustomer(null);
+    setErrors({ phone: '', taxNumber: '' });
   };
 
   const handleAdd = () => {
@@ -62,6 +78,24 @@ export default function MusteriListesiPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validasyon kontrolü
+    const newErrors = { phone: '', taxNumber: '' };
+    
+    if (!validatePhone(formData.phone)) {
+      newErrors.phone = 'Telefon numarası +905xxxxxxxxx formatında olmalıdır (13 karakter)';
+    }
+    
+    if (formData.taxNumber && !validateTaxNumber(formData.taxNumber)) {
+      newErrors.taxNumber = 'Vergi numarası 10 haneli olmalıdır';
+    }
+    
+    setErrors(newErrors);
+    
+    if (newErrors.phone || newErrors.taxNumber) {
+      return;
+    }
+    
     if (editingCustomer) {
       updateCustomer(editingCustomer.id, formData);
     } else {
@@ -69,6 +103,38 @@ export default function MusteriListesiPage() {
     }
     setShowModal(false);
     resetForm();
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    // Sadece rakam ve + işaretine izin ver
+    value = value.replace(/[^0-9+]/g, '');
+    // + işareti sadece başta olabilir
+    if (value.includes('+') && !value.startsWith('+')) {
+      value = value.replace(/\+/g, '');
+    }
+    // Maksimum 13 karakter
+    if (value.length > 13) {
+      value = value.substring(0, 13);
+    }
+    setFormData({ ...formData, phone: value });
+    if (errors.phone) {
+      setErrors({ ...errors, phone: '' });
+    }
+  };
+
+  const handleTaxNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    // Sadece rakamlara izin ver
+    value = value.replace(/[^0-9]/g, '');
+    // Maksimum 10 karakter
+    if (value.length > 10) {
+      value = value.substring(0, 10);
+    }
+    setFormData({ ...formData, taxNumber: value });
+    if (errors.taxNumber) {
+      setErrors({ ...errors, taxNumber: '' });
+    }
   };
 
   const columns = [
@@ -185,23 +251,31 @@ export default function MusteriListesiPage() {
                   type="tel"
                   required
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="+90 XXX XXX XX XX"
+                  onChange={handlePhoneChange}
+                  className={`w-full px-3 py-2 border ${errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100`}
+                  placeholder="+905340103014"
+                  maxLength={13}
                 />
+                {errors.phone && (
+                  <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+                )}
               </div>
 
               <div className="col-span-1">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Vergi Numarası
+                  Vergi Numarası (10 haneli)
                 </label>
                 <input
                   type="text"
                   value={formData.taxNumber}
-                  onChange={(e) => setFormData({ ...formData, taxNumber: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
-                  placeholder="Örn. 1234567890"
+                  onChange={handleTaxNumberChange}
+                  className={`w-full px-3 py-2 border ${errors.taxNumber ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100`}
+                  placeholder="1234567890"
+                  maxLength={10}
                 />
+                {errors.taxNumber && (
+                  <p className="mt-1 text-sm text-red-500">{errors.taxNumber}</p>
+                )}
               </div>
               <div className="col-span-1">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
