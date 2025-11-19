@@ -37,7 +37,7 @@ SELECT 'settings', COUNT(*) FROM Settings;
 
 ## 🛠️ Yöntem 1: Prisma Studio ile Manuel Transfer (Küçük Veri - <1000 kayıt)
 
-### Adım 1: Her İki Veritabanını da Hazırlayın
+### Adım 1: Her İki Veritabanını da Hazırlayınnn
 
 **MySQL (Mevcut):**
 ```env
