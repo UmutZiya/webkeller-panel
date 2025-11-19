@@ -1,7 +1,7 @@
 {
   "buildCommand": "prisma generate && next build",
   "env": {
-    "DATABASE_URL": "@database_url"
+    "DATABASE_URL": "postgresql://postgres.xxymkuzvimqfswuwyoce:Umutziya8688@aws-1-eu-central-1.pooler.supabase.com:6543/postgres"
   }
 }
 
